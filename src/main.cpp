@@ -1,10 +1,8 @@
-#include "drawGrid.h"
-
+#include <brightness.h> 
 
 
 int main(void){
-    init();
-    MakeGrid();
-
-    return 0;
+  brightness_init();
+    while (1)
+    {}
 }
