@@ -5,18 +5,12 @@ static void pwm_brightness_setup(void){
     //PD5 as output
     DDRD |= (1<<PD5);
 
-    // Timer0: Fast PWM, 8-bit, TOP = 0xFF
-    // WGM01:0 = 0b11 (Fast PWM)
     TCCR0A |= (1 << WGM00) | (1 << WGM01);
     TCCR0B &= ~(1 << WGM02);
 
-    // Non-inverting mode on OC0B (clear on compare match, set at BOTTOM)
-    // COM0B1:0 = 0b10
     TCCR0A |= (1 << COM0B1);
     TCCR0A &= ~(1 << COM0B0);
 
-    // Clock select: prescaler = 64 → ~976 Hz at 16 MHz
-    // CS02:0 = 0b011 (clk/64)
     TCCR0B |= (0 << CS01) | (1 << CS00); 
     OCR0B = 255;
 }
