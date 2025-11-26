@@ -41,4 +41,8 @@ ISR(ADC_vect){
     backlight_set(brightness);
 }
 
+void brightness_init(void){
+    adc_setup();
+    pwm_brightness_setup();
+}
 

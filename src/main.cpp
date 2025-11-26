@@ -2,10 +2,7 @@
 
 
 int main(void){
-    adc_setup();
-    pwm_brightness_setup();
+  brightness_init();
     while (1)
-    {
-      
-    }
+    {}
 }
