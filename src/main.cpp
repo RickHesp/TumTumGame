@@ -19,6 +19,9 @@ void setup() {
 
     int horizontal_val = h/7;
     int vertical_val = h/7;
+
+    //start drawing
+    tft.fillScreen(ILI9341_BLUE);
     for (int i = 0; i <= w; i+=vertical_val) {
         Serial.println("else");
         tft.drawFastVLine(i, 0, h, ILI9341_BLACK);
