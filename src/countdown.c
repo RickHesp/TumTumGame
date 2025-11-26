@@ -1,25 +1,25 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define EXPANDER_ADDR 0x20
+#define EXPANDER_ADDR 0x21  // I2C address
 
 const uint8_t digit_map[10] = {
-    0x3F,
-    0x06,
-    0x5B,
-    0x4F,
-    0x66,
-    0x6D,
-    0x7D,
-    0x07,
-    0x7F,
-    0x6F
+    0b11000000, // 0
+    0b11111001, // 1
+    0b10100100, // 2
+    0b10110000, // 3
+    0b10011001, // 4
+    0b10010010, // 5
+    0b10000010, // 6
+    0b11111000, // 7
+    0b10000000, // 8
+    0b10010000  // 9
 };
 
-// --- TWI (I2C) Functions ---
+
 void TWI_init(void) {
-    TWSR = 0x00; // prescaler = 1
-    TWBR = 72;   // ~100kHz @ 16MHz
+    TWSR = 0x00;     // prescaler = 1
+    TWBR = 72;       // ~100kHz at 16MHz
 }
 
 void TWI_start(void) {
@@ -37,22 +37,20 @@ void TWI_write(uint8_t data) {
     while (!(TWCR & (1<<TWINT)));
 }
 
-// --- Send byte to port expander ---
 void expander_write(uint8_t data) {
     TWI_start();
-    TWI_write(EXPANDER_ADDR << 1); // SLA+W
+    TWI_write(EXPANDER_ADDR << 1);
     TWI_write(data);
     TWI_stop();
 }
 
-// --- Main program ---
-int main(void) {
+int countDown_start(void) {
     TWI_init();
 
     while (1) {
-        for (int i = 9; i >= 0; i--) {
-            expander_write(digit_map[i]); // show digit
-            _delay_ms(1000);              // wait 1s
+        for (int i = 0; i < 10; i++) {
+            expander_write(digit_map[i]);
+            _delay_ms(1000);
         }
-    }
+    }      
 }
