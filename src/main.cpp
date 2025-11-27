@@ -1,8 +1,11 @@
 #include <brightness.h> 
+#include "drawGrid.h"
 
 
 int main(void){
-  brightness_init();
+    init();
+    grid_init();
+    brightness_init();
     while (1)
     {}
 }
