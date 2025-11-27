@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include "TWI.h"
 
 #define EXPANDER_ADDR 0x21  // I2C expander address
 
@@ -16,30 +17,9 @@ const uint8_t digit_map[10] = {
     0b10010000  // 9
 };
 
-
-void TWI_init(void) {
-    TWSR = 0x00;     // prescaler = 1
-    TWBR = 72;       // ~100kHz at 16MHz
-}
-
-void TWI_start(void) {
-    TWCR = (1<<TWINT)|(1<<TWSTA)|(1<<TWEN);
-    while (!(TWCR & (1<<TWINT))); //wait for the start-signal to be fully sent
-}
-
-void TWI_stop(void) {
-    TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
-}
-
-void TWI_write(uint8_t data) {
-    TWDR = data; //contains next bit to be sent
-    TWCR = (1<<TWINT)|(1<<TWEN);
-    while (!(TWCR & (1<<TWINT)));
-}
-
-void expander_write(uint8_t data) {
+void expander_write(uint8_t data, uint8_t expander) {
     TWI_start();
-    TWI_write(EXPANDER_ADDR << 1); //where to send the bits
+    TWI_write(expander << 1); //where to send the bits
     TWI_write(data);
     TWI_stop();
 }
@@ -49,7 +29,7 @@ int countDown_start(void) {
 
     while (1) {
         for (int i = 0; i < 10; i++) {
-            expander_write(digit_map[i]);
+            expander_write(digit_map[i], EXPANDER_ADDR);
             _delay_ms(500);
         }
     }      
