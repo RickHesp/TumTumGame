@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-#include <stdint.h>
 #include <stdlib.h>
+#include <usart.h>
 
 #define F_CPU 16000000UL
 #define BAUD 9600
@@ -12,23 +12,6 @@
 volatile uint8_t ir_buffer[BUFFER_SIZE];
 volatile uint8_t ir_head = 0;
 volatile uint8_t ir_tail = 0;
-
-// UART
-void uart_init(void) {
-    UBRR0H = (UBRR_VALUE >> 8);
-    UBRR0L = UBRR_VALUE;
-    UCSR0B = (1<<TXEN0);
-    UCSR0C = (1<<UCSZ01)|(1<<UCSZ00);
-}
-
-void uart_send(char c) {
-    while (!(UCSR0A & (1<<UDRE0)));
-    UDR0 = c;
-}
-
-void uart_print(const char* s) {
-    while(*s) uart_send(*s++);
-}
 
 // Timer0
 void init_carrier() {
@@ -91,23 +74,23 @@ ISR(INT0_vect) {
     ir_head = (ir_head + 1) % BUFFER_SIZE;
 }
 uint8_t n = 0;
-int counter = 0;
+uint16_t counter = 0;
 int main(void) {
-    uart_init();
+    USART_Init();
     init_carrier();
     init_sender();
     init_ir_receiver();
     sei(); 
 
-    uart_print("IR monitor started\r\n");
+    USART_Print("IR monitor started\r\n");
 
     while(1) {
         // buffer uitlezen en printen
         while(ir_tail != ir_head) {
             if(ir_buffer[ir_tail])
-                uart_send('1');
+                USART_Transmit('1');
             else
-                uart_send('0');
+                USART_Transmit('0');
             ir_tail = (ir_tail + 1) % BUFFER_SIZE;
                     n++;
         if(n >= 4) {
@@ -115,8 +98,8 @@ int main(void) {
             n = 0;
             char buf[10];
             itoa(counter, buf, 10);
-            uart_print(buf);
-            uart_print("\r\n");
+            USART_Print(buf);
+            USART_Print("\r\n");
           }
         }
     }
