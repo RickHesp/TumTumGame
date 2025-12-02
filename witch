@@ -1,0 +1,75 @@
+[33mcommit dee08bdbc443e9d5abd3d090eceac7b1abc17796[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32m7SegmentDisplay[m[33m, [m[1;31morigin/7SegmentDisplay[m[33m)[m
+Author: sting-byte <s1179208@student.windesheim.nl>
+Date:   Thu Nov 27 15:37:59 2025 +0100
+
+    added nunchuck functionality for the joystick
+    
+    also made sure it worked together with the countdown.
+
+[33mcommit e1bd102d18767d80f7aded57176abe00bbeec6d9[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Thu Nov 27 11:43:12 2025 +0100
+
+    made a start with reading nunchuck
+    
+    moved twi functions to its own library
+
+[33mcommit c9b4b7e5da27a87d1f7c54daa00b00969a4e8650[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Wed Nov 26 12:32:01 2025 +0100
+
+    added comments to clarify code and made the 7segment update every 500ms to make testing easier
+
+[33mcommit 3ca47c4e338f75d4d3a03d33b6200ef3313f0bb6[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Wed Nov 26 11:58:31 2025 +0100
+
+    Update expander address, 7‑seg map, and entry routine
+    
+    Corrects the I2C expander address and replaces hex literals with explicit 7‑segment bit patterns for clarity and correctness. Improves TWI init comments and tidies up I2C write usage. Replaces the program entry point with a named function to allow integration into larger firmware instead of using a standalone main, and removes an unused Arduino example file.
+    
+    These changes fix addressing errors, make digit encoding easier to verify and maintain, and make the countdown functionality more modular for reuse.
+
+[33mcommit 1a5d9629cb036be1de6294d81bbe24f09ce634a1[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Tue Nov 25 14:58:48 2025 +0100
+
+    added demo program to count down on the display
+
+[33mcommit e86ea927c2e1fa76f50eaf3dba685817e0ae847a[m
+Merge: 136bea6 3f62f99
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Tue Nov 25 14:27:46 2025 +0100
+
+    Merge pull request #3 from RickHesp/schermhelderheid
+    
+    Restructure project and clean up config files
+
+[33mcommit 3f62f991cedbfdb1b0cf188f56be1993781e1130[m
+Author: ellopatat <117219944+ellopatat@users.noreply.github.com>
+Date:   Tue Nov 25 14:21:17 2025 +0100
+
+    Restructure project and clean up config files
+    
+    Moved Battleship project files to the root directory and deleted redundant .gitignore, .vscode, and README.md files. Updated .gitignore to include new config and build files.
+
+[33mcommit 136bea6a19122e4372d08789c0eb1b1a1bf80644[m
+Merge: c51d33e a017a24
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Tue Nov 25 13:08:10 2025 +0100
+
+    Merge pull request #2 from RickHesp/schermhelderheid
+    
+    added project Battleship
+
+[33mcommit a017a2413c5c7f8f9d5b30138e1297c4c2140c08[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Tue Nov 25 13:07:26 2025 +0100
+
+    added project Battleship to the branch
+
+[33mcommit c51d33edc30c2513898d72197b448d84d61e2108[m
+Author: Rick Hesp <s1179208@student.windesheim.nl>
+Date:   Tue Nov 11 12:26:44 2025 +0100
+
+    Initial commit
