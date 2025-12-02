@@ -31,3 +31,24 @@ void grid_init(){
         tft.drawFastHLine(0, i, w, ILI9341_BLACK);
     }
 }
+
+void color_cell(uint8_t cell, uint16_t color)
+{
+    //check valid cell
+    if(cell < 1 || cell > 36) return;
+
+    //calculate row and column
+    uint8_t index = cell - 1;
+    uint8_t row   = index / 6;
+    uint8_t col   = index % 6;
+
+    //calculate cell size
+    uint16_t cellSize = 240 / 6;
+
+    //calculate x and y position
+    uint16_t x = col * cellSize;
+    uint16_t y = row * cellSize;
+
+    //fill 1 cell (slightly smaller so lines remain visible)
+    tft.fillRect(x+1, y+1, cellSize-1, cellSize-1, color);
+}
