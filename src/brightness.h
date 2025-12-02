@@ -5,14 +5,14 @@ static void pwm_brightness_setup(void){
     //PD5 as output
     DDRD |= (1<<PD5);
     //fast PWM mode.
-    TCCR2A |= (1 << WGM20) | (1 << WGM21);
-    TCCR2B &= ~(1 << WGM22);
+    TCCR0A |= (1 << WGM00) | (1 << WGM01);
+    TCCR0B &= ~(1 << WGM02);
     //non-inverting mode on OC2B(PD5)
-    TCCR2A |= (1 << COM2B1);
-    TCCR2A &= ~(1 << COM2B0);
+    TCCR0A |= (1 << COM0B1);
+    TCCR0A &= ~(1 << COM0B0);
     //no prescaler
-    TCCR2B |= (0 << CS21) | (1 << CS20); 
-    OCR2B = 255;
+    TCCR0B |= (0 << CS01) | (1 << CS00); 
+    OCR0B = 255;
 }
 
 void backlight_set(uint8_t brightness)
@@ -31,7 +31,7 @@ static void adc_setup(void){
 }
 
 ISR(ADC_vect){  
-    uint8_t brightness = ADC;
+    uint8_t brightness = ADCH;
     backlight_set(brightness);
 }
 
