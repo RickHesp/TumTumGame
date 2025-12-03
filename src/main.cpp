@@ -1,10 +1,15 @@
+#include <brightness.h> 
+#include "drawGrid.h"
 #include "sendcommand.h"
 #include "usart.h"
 
-int main(void) {
+int main(void){
+    init();
+    grid_init();
+    brightness_init();
     init_ir_sender();
     USART_Init();
-
+    
     while(1) {
         //send IR command
         if(send_next_command_flag){
@@ -13,12 +18,11 @@ int main(void) {
         }
 
         // read IR
-        while(ir_tail != ir_head) {
-            if(ir_buffer[ir_tail])
-                USART_Transmit('1');
-            else
-                USART_Transmit('0');
+     while(ir_tail != ir_head) {
+        if(ir_buffer[ir_tail])
+            USART_Transmit('1');
+        else
+            USART_Transmit('0');
             ir_tail = (ir_tail + 1) % BUFFER_SIZE;
         }
-    }
 }
