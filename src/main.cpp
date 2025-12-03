@@ -14,6 +14,9 @@ volatile uint8_t ir_tail = 0;
 // Timer0
 volatile uint16_t frame;
 volatile uint8_t send_next_command_flag = 0;
+volatile uint8_t half_bit_index = 0;
+volatile uint8_t sending = 0;
+volatile uint8_t toggle_bit = 0;
 
 void init_carrier() {
     DDRD |= (1<<DDD6); 
@@ -38,22 +41,34 @@ void init_sender() {
 }
 
 void send_command(){
-    USART_Print("Second passed");
+    USART_Print("Sending...");
+    frame = 0b10101000111010; 
+    half_bit_index = 0;
+    sending = 1;
 }
 
 ISR(TIMER2_COMPA_vect) {
     static uint16_t software_counter = 0;
 
-    if(tx_bit_index < 8) {
-        if(tx_byte & (1<<tx_bit_index)) {
-            TCCR0A |= (1<<COM0A1);
-        } else {
+    if (!sending) {
+        TCCR0A &= ~(1<<COM0A1); // carrier off
+    } else {
+        uint8_t bit_index = half_bit_index / 2;
+        uint8_t first_half = (half_bit_index % 2 == 0);
+        uint8_t bit_value = (frame >> (13 - bit_index)) & 1;
+
+        if ((bit_value && first_half) || (!bit_value && !first_half))
+            TCCR0A |= (1<<COM0A1);  // carrier on
+        else
+            TCCR0A &= ~(1<<COM0A1); // carrier off
+
+        half_bit_index++;
+        if (half_bit_index >= 28) {
+            half_bit_index = 0;
+            sending = 0;
+            toggle_bit ^= 1;
             TCCR0A &= ~(1<<COM0A1);
         }
-        tx_bit_index++;
-    } else {
-        TCCR0A &= ~(1<<COM0A1); 
-        tx_bit_index = 0;
     }
 
     software_counter++;
