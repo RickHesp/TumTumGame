@@ -25,10 +25,11 @@ volatile uint8_t tx_bit_index = 0;
 volatile uint8_t tx_busy = 0;
 
 void init_sender() {
-    // Timer2 CTC mode
+    TCCR2A = 0;
+    TCCR2B = 0;
     TCCR2A = (1<<WGM21); // CTC
-    OCR2A = 199;
-    TCCR2B = (1<<CS21);   // prescaler 8
+    OCR2A = 222; // half bit: 889us
+    TCCR2B = (1<<CS22);   // prescaler 64
     TIMSK2 = (1<<OCIE2A); // enable compare match interrupt
 }
 
