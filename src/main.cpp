@@ -3,10 +3,7 @@
 #include <stdlib.h>
 #include <usart.h>
 
-#define F_CPU 16000000UL
-#define BAUD 9600
-#define UBRR_VALUE ((F_CPU/16/BAUD)-1)
-#define BITTIME_US 1000   // 1 ms per bit
+#define HALFBIT_US 889
 #define BUFFER_SIZE 64
 
 volatile uint8_t ir_buffer[BUFFER_SIZE];
@@ -65,7 +62,7 @@ ISR(INT0_vect) {
     uint16_t pulse = now - last_count;
     last_count = now;
 
-    if(pulse > (BITTIME_US*16)) { // timer1 1us
+    if(pulse > (HALFBIT_US*16)) { // timer1 1us
         ir_buffer[ir_head] = 1;
     } else {
         ir_buffer[ir_head] = 0;
