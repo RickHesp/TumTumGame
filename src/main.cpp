@@ -10,7 +10,11 @@ volatile uint8_t ir_buffer[BUFFER_SIZE];
 volatile uint8_t ir_head = 0;
 volatile uint8_t ir_tail = 0;
 
+// sender
 // Timer0
+volatile uint16_t frame;
+volatile uint8_t send_next_command_flag = 0;
+
 void init_carrier() {
     DDRD |= (1<<DDD6); 
 
@@ -33,7 +37,13 @@ void init_sender() {
     TIMSK2 = (1<<OCIE2A); // enable compare match interrupt
 }
 
+void send_command(){
+    USART_Print("Second passed");
+}
+
 ISR(TIMER2_COMPA_vect) {
+    static uint16_t software_counter = 0;
+
     if(tx_bit_index < 8) {
         if(tx_byte & (1<<tx_bit_index)) {
             TCCR0A |= (1<<COM0A1);
@@ -44,6 +54,12 @@ ISR(TIMER2_COMPA_vect) {
     } else {
         TCCR0A &= ~(1<<COM0A1); 
         tx_bit_index = 0;
+    }
+
+    software_counter++;
+    if(software_counter > 1125){ // 1125 * 889us = 1s
+        software_counter = 0;
+        send_next_command_flag = 1;
     }
 }
 
@@ -83,6 +99,11 @@ int main(void) {
     USART_Print("IR monitor started\r\n");
 
     while(1) {
+        if(send_next_command_flag){
+            send_next_command_flag = 0;
+            send_command();
+        }
+
         // buffer uitlezen en printen
         while(ir_tail != ir_head) {
             if(ir_buffer[ir_tail])
