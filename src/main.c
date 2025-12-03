@@ -3,15 +3,13 @@
 #include <stdlib.h>
 #include "countdown.h"
 #include "nunchuck.h"
+#include "nunchuckdraw.h"
 
 
 #define BAUD 9600
 #define MYUBRR ((F_CPU / (16UL * BAUD)) - 1)
 #define NUNCHUCK_ADDR 0x52
 #define EXPANDER_ADDR 0x21
-
-
-
 
 // ---------- UART ----------
 void UART_init(unsigned int ubrr) {
@@ -47,11 +45,13 @@ int main(void) {
     nunchuck_init(NUNCHUCK_ADDR);
 
     while (1) {
+        
         countDown_step(EXPANDER_ADDR, digit);
         digit = (digit + 1) % 10;
 
         data[0] = nunchuck_readJoystick(NUNCHUCK_ADDR).x;
         data[1] = nunchuck_readJoystick(NUNCHUCK_ADDR).y;
+        draw_joystick(nunchuck_readJoystick(NUNCHUCK_ADDR));
 
         UART_printString("JoyX: ");
         UART_printByte(data[0]);

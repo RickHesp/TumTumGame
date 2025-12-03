@@ -7,6 +7,10 @@ typedef struct {
     uint8_t y;
 } NunchuckJoystick;
 
+void nunchuck_init(uint8_t expander);
+void nunchuck_read(uint8_t expander, uint8_t *buf);
+NunchuckJoystick nunchuck_readJoystick(uint8_t expander);
+
 void nunchuck_init(uint8_t expander){
     TWI_start();
     TWI_write(expander<<1); //open nunchuck in write mode
@@ -57,24 +61,4 @@ NunchuckJoystick nunchuck_readJoystick(uint8_t expander) {
     joy.y = buf[1];
 
     return joy;
-}
-
-void nunchuck_up(int8_t x,int8_t y)
-{
-    if(y>150)
-    {
-        //up
-    }
-    if(y<100)
-    {
-        //down
-    }
-    if(x>150)
-    {
-        //right
-    }
-    if(x<100)
-    {
-        //left
-    }
 }

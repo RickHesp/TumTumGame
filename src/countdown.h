@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <util/delay.h>
+#include "TWI.h"
 
 const uint8_t digit_map[10] = {
     0b11000000, // 0
