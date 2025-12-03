@@ -40,9 +40,18 @@ void init_sender() {
     TIMSK2 = (1<<OCIE2A); // enable compare match interrupt
 }
 
-void send_command(){
-    USART_Print("Sending...");
-    frame = 0b10101000111010; 
+uint16_t build_frame(uint8_t field, uint8_t toggle, uint8_t address, uint8_t command){
+    uint16_t f = 0;
+    f |= (1 << 13); // Startbit
+    f |= (field & 1) << 12; // Fieldbit
+    f |= (toggle & 1) << 11; // Togglebit
+    f |= (address & 0x1F) << 6; // A0–A4
+    f |= (command & 0x3F); // C1–C6
+    return f;
+}
+
+void send_command(uint8_t field, uint8_t address, uint8_t command){
+    frame = build_frame(field, toggle_bit, address, command);
     half_bit_index = 0;
     sending = 1;
 }
@@ -71,6 +80,7 @@ ISR(TIMER2_COMPA_vect) {
         }
     }
 
+    // This version sends a command every second in stead of upon an event
     software_counter++;
     if(software_counter > 1125){ // 1125 * 889us = 1s
         software_counter = 0;
@@ -116,7 +126,7 @@ int main(void) {
     while(1) {
         if(send_next_command_flag){
             send_next_command_flag = 0;
-            send_command();
+            send_command(0, 1, 0x65);
         }
 
         // buffer uitlezen en printen
