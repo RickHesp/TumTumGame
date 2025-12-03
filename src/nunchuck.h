@@ -1,5 +1,5 @@
 #include "TWI.h"
-#include "avr/io.h"
+#include <avr/io.h>
 #include <util/delay.h>
 
 typedef struct {
@@ -57,4 +57,24 @@ NunchuckJoystick nunchuck_readJoystick(uint8_t expander) {
     joy.y = buf[1];
 
     return joy;
+}
+
+void nunchuck_up(int8_t x,int8_t y)
+{
+    if(y>150)
+    {
+        //up
+    }
+    if(y<100)
+    {
+        //down
+    }
+    if(x>150)
+    {
+        //right
+    }
+    if(x<100)
+    {
+        //left
+    }
 }
