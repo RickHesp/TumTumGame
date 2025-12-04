@@ -14,13 +14,11 @@ volatile uint8_t sending = 0;
 volatile uint8_t toggle_bit = 0;
 
 void init_carrier() {
-    DDRD |= (1<<PD6); // PD6 output
-    TCCR0A |= (1<<COM0A1); // Non-inverting PWM on OC0A
-    OCR0A = 210; // 38kHz carrier
+    DDRD |= (1<<DDD6); // PD6 output
+    // Timer0 mode is already set in brightness PWM setup
 }
 
-// Timer2
-volatile uint8_t tx_byte = 0x55; // 01010101
+volatile uint8_t tx_byte = 0x55;
 volatile uint8_t tx_bit_index = 0;
 volatile uint8_t tx_busy = 0;
 
@@ -36,10 +34,10 @@ void init_sender() {
 uint16_t build_frame(uint8_t field, uint8_t toggle, uint8_t address, uint8_t command){
     uint16_t f = 0;
     f |= (1 << 13); // Startbit
-    f |= (field & 1) << 12; // Fieldbit
-    f |= (toggle & 1) << 11; // Togglebit
-    f |= (address & 0x1F) << 6; // A0–A4
-    f |= (command & 0x3F); // C1–C6
+    f |= (field & 1) << 12;
+    f |= (toggle & 1) << 11;
+    f |= (address & 0x1F) << 6;
+    f |= (command & 0x3F);
     return f;
 }
 
@@ -81,14 +79,13 @@ ISR(TIMER2_COMPA_vect) {
     }
 }
 
-// Timer1
 void init_ir_receiver() {
-    DDRD &= ~(1<<DDD2);   // PD2 input
+    DDRD &= ~(1<<DDD2); // PD2 input
     PORTD |= (1<<PORTD2); // pull-up
 
-    TCCR1B = (1<<CS10);   // timer1 start, prescaler 1
-    EICRA = (1<<ISC00);   // INT0 trigger ANY CHANGE
-    EIMSK = (1<<INT0);    // enable INT0
+    TCCR1B = (1<<CS10); // timer1 start, prescaler 1
+    EICRA = (1<<ISC00); // INT0 trigger ANY CHANGE
+    EIMSK = (1<<INT0); // enable INT0
 }
 
 ISR(INT0_vect) {
@@ -97,7 +94,7 @@ ISR(INT0_vect) {
     uint16_t pulse = now - last_count;
     last_count = now;
 
-    if(pulse > (HALFBIT_US*16)) { // timer1 1us
+    if(pulse > (HALFBIT_US*16)) { //timer 1us
         ir_buffer[ir_head] = 1;
     } else {
         ir_buffer[ir_head] = 0;
