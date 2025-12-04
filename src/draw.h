@@ -38,7 +38,7 @@ void color_cell(uint8_t cell, uint16_t color)
     if(cell < 1 || cell > 36) return;
 
     //calculate row and column
-    uint8_t index = cell;
+    uint8_t index = cell - 1;
     uint8_t row   = index / 6;
     uint8_t col   = index % 6;
 

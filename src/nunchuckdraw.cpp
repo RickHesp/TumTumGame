@@ -1,6 +1,5 @@
-#include <SPI.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_ILI9341.h>
+#include "nunchuckdraw.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,15 +14,20 @@ int move_joysticks(NunchuckJoystick_t joy, int grid_size) {
     int dy = 0;
 
 //define movements
-    if (joy.x < 100) {
-        dx = -1; // Move left
-    } else if (joy.x > 155) {
-        dx = 1;  // Move right
-    }else if (joy.y > 175) {
-        dy = -1; // Move up
-    } else if (joy.y < 90) {
-        dy = 1;  // Move down
+    if(joy.x == 128 && joy.y == 128){
+        return start_index; //no movement
+    }else{
+         if (joy.x < 100) {
+            dx = -1; // Move left
+        } else if (joy.x > 155) {
+            dx = 1;  // Move right
+        }else if (joy.y > 175) {
+            dy = -1; // Move up
+        } else if (joy.y < 90) {
+            dy = 1;  // Move down
     }
+    }
+   
     
     uint8_t row = start_index / grid_size;
     uint8_t col = start_index % grid_size;
@@ -31,8 +35,9 @@ int move_joysticks(NunchuckJoystick_t joy, int grid_size) {
     //update
     uint8_t newRow = row + dy;
     uint8_t newCol = col + dx;
+    color_cell(start_index, ILI9341_BLUE); //clear old position
 
-    start_index = newRow * grid_size + newCol + 1;
+    start_index = newRow * grid_size + newCol;
 
 
     return start_index;
