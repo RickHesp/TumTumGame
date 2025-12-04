@@ -1,7 +1,3 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdlib.h>
-
 #define HALFBIT_US 889
 #define BUFFER_SIZE 64
 
@@ -18,11 +14,9 @@ volatile uint8_t sending = 0;
 volatile uint8_t toggle_bit = 0;
 
 void init_carrier() {
-    DDRD |= (1<<DDD6); 
-
-    TCCR0A = (1<<COM0A1)|(1<<WGM01)|(1<<WGM00); 
-    OCR0A = 210; // ~38 kHz
-    TCCR0B = (1<<CS00); // no prescaler
+    DDRD |= (1<<PD6); // PD6 output
+    TCCR0A |= (1<<COM0A1); // Non-inverting PWM on OC0A
+    OCR0A = 210; // 38kHz carrier
 }
 
 // Timer2
@@ -116,5 +110,4 @@ void init_ir_sender(){
     init_carrier();
     init_sender();
     init_ir_receiver();
-    sei(); 
 }
