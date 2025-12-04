@@ -37,7 +37,13 @@ int move_joysticks(NunchuckJoystick_t joy, int grid_size) {
     uint8_t newCol = col + dx;
     color_cell(start_index, ILI9341_BLUE); //clear old position
 
-    start_index = newRow * grid_size + newCol;
+    start_index = newRow * grid_size + newCol + 1;
+
+    if(start_index < 1 || start_index > grid_size * grid_size){
+        start_index -= (dy * grid_size + dx);
+    }else if(newCol < 0 || newCol >= grid_size){
+        start_index -= (dy * grid_size + dx);
+    }
 
 
     return start_index;

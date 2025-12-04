@@ -8,7 +8,7 @@
 
 #define EXPANDER_ADRESS 0x52
 uint16_t lastmove = 0;
-uint16_t movetime = 200; //time between moves in ms
+uint16_t movetime = 100; //time between moves in ms
 
 int main(void){
 
@@ -18,23 +18,21 @@ int main(void){
     grid_init();
     brightness_init();
     nunchuck_init(EXPANDER_ADRESS);
+    NunchuckJoystick_t joy;
     while (1)
     {
       unsigned long current = millis();
       if (current - lastmove >= movetime) {
-        NunchuckJoystick_t joy = nunchuck_readJoystick(EXPANDER_ADRESS);
+         joy = nunchuck_readJoystick(EXPANDER_ADRESS);   
         int index = move_joysticks(joy, 6);
         color_cell(index, ILI9341_RED);
         lastmove = current;
-    }
-      // serial debugging
-      // Serial.print("Cell Index: ");
-      // Serial.print(index);
-      // Serial.print("Joystick X: ");
-      // Serial.print(joy.x);
-      // Serial.print(" | Joystick Y: ");
-      // Serial.println(joy.y);
-
-      // delay(10);
+      }
+      read_buttons(EXPANDER_ADRESS, joy.cButton, joy.zButton);
+      if (joy.cButton){
+        color_cell(1, ILI9341_GREEN);
+      }else if(joy.zButton){
+          color_cell(1, ILI9341_BLACK);
+      }
     }
 }

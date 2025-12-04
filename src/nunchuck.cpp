@@ -4,6 +4,7 @@
 #include "nunchuckdraw.h"
 #include "nunchuck.h"
 
+
 void nunchuck_init(uint8_t expander){
     TWI_start();
     TWI_write(expander<<1); //open nunchuck in write mode
@@ -54,4 +55,14 @@ NunchuckJoystick_t nunchuck_readJoystick(uint8_t expander) {
     joy.y = buf[1];
 
     return joy;
+}
+
+void read_buttons(uint8_t expander, bool *cButton, bool *zButton) {
+    uint8_t buf[6];
+    nunchuck_read(expander, buf);
+
+    // get button states
+    *zButton = !(buf[5] & 0x01);  // bit 0
+    *cButton = !((buf[5] >> 1) & 0x01); //bit 1
+
 }
