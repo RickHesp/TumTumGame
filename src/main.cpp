@@ -39,10 +39,10 @@
 // };
 
 int main() {
-    init();
     uint8_t data[2];
     int8_t digit = 0;
-
+    
+    draw_init();
     TWI_init();
     nunchuck_init(NUNCHUCK_ADDR);
 
@@ -50,10 +50,13 @@ int main() {
         countDown_step(EXPANDER_ADDR, digit);
         digit = (digit + 1) % 10;
 
-        NunchuckJoystick js = nunchuck_readJoystick(NUNCHUCK_ADDR);
+        NunchuckJoystick_t js = nunchuck_readJoystick(NUNCHUCK_ADDR);
         data[0] = js.x;
         data[1] = js.y;
-        draw_joystick(js);
+        move_joystick(js);
+        draw_cursor(js);
+        drawCubeAtIndex(0, 0xF800); // Red
+        updateCube(EXPANDER_ADDR);
 
 
         _delay_ms(100);
