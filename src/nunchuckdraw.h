@@ -1,21 +1,13 @@
-#ifndef NUNCHUCKDRAW_H
-#define NUNCHUCKDRAW_H
+#include "nunchuck.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "nunchuck.h"
-
 void draw_init();
-void draw_cursor(NunchuckJoystick_t joy);
-void move_joystick(NunchuckJoystick_t joy);
-void color_cell(int index, uint16_t color);
-void drawCubeAtIndex(int index, uint16_t color);
+int move_joysticks(NunchuckJoystick_t joy, int grid_size);
 void updateCube(uint8_t expander);
 
 #ifdef __cplusplus
 }
-#endif
-
 #endif

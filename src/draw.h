@@ -1,6 +1,8 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
+#include "nunchuck.h"
+#include "nunchuckdraw.h"
 
 #define TFT_CS   10
 #define TFT_DC   9
@@ -38,7 +40,7 @@ void color_cell(uint8_t cell, uint16_t color)
     if(cell < 1 || cell > 36) return;
 
     //calculate row and column
-    uint8_t index = cell - 1;
+    uint8_t index = cell;
     uint8_t row   = index / 6;
     uint8_t col   = index % 6;
 
@@ -51,4 +53,24 @@ void color_cell(uint8_t cell, uint16_t color)
 
     //fill 1 cell (slightly smaller so lines remain visible)
     tft.fillRect(x+1, y+1, cellSize-1, cellSize-1, color);
+}
+
+void draw_cursor(NunchuckJoystick_t joy) {
+
+    // Center of the 240x240 square
+    const int centerX = 120;
+    const int centerY = 120;
+
+    const float scale = 100.0f / 128.0f;
+
+    int joyX = centerX + static_cast<int>((static_cast<int>(joy.x) - 128) * scale);
+    int joyY = centerY + static_cast<int>((static_cast<int>(joy.y) - 128) * scale);
+
+    if (joyX < 0) joyX = 0;
+    if (joyX > 239) joyX = 239;
+    if (joyY < 0) joyY = 0;
+    if (joyY > 239) joyY = 239;
+
+    // Optional: clear previous marker or draw a small contrasting ring
+    tft.fillCircle(joyX, joyY, 5, ILI9341_RED);
 }
