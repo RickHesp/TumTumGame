@@ -10,8 +10,6 @@
 
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC, TFT_RST);
 
-
-
 void grid_init(){
     tft.begin();
     tft.setRotation(1); //320x240
@@ -55,22 +53,21 @@ void color_cell(uint8_t cell, uint16_t color)
     tft.fillRect(x+1, y+1, cellSize-1, cellSize-1, color);
 }
 
-void draw_cursor(NunchuckJoystick_t joy) {
+// void draw_cursor(NunchuckJoystick_t joy) {
 
-    // Center of the 240x240 square
-    const int centerX = 120;
-    const int centerY = 120;
+//     // Center of the 240x240 square
+//     const int centerX = 120;
+//     const int centerY = 120;
 
-    const float scale = 100.0f / 128.0f;
+//     const float scale = 100.0f / 128.0f;
 
-    int joyX = centerX + static_cast<int>((static_cast<int>(joy.x) - 128) * scale);
-    int joyY = centerY + static_cast<int>((static_cast<int>(joy.y) - 128) * scale);
+//     int joyX = centerX + static_cast<int>((static_cast<int>(joy.x) - 128) * scale);
+//     int joyY = centerY + static_cast<int>((static_cast<int>(joy.y) - 128) * scale);
 
-    if (joyX < 0) joyX = 0;
-    if (joyX > 239) joyX = 239;
-    if (joyY < 0) joyY = 0;
-    if (joyY > 239) joyY = 239;
+//     if (joyX < 0) joyX = 0;
+//     if (joyX > 239) joyX = 239;
+//     if (joyY < 0) joyY = 0;
+//     if (joyY > 239) joyY = 239;
 
-    // Optional: clear previous marker or draw a small contrasting ring
-    tft.fillCircle(joyX, joyY, 5, ILI9341_RED);
-}
+//     tft.fillCircle(joyX, joyY, 5, ILI9341_RED);
+// }
