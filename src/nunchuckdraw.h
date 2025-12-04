@@ -1,11 +1,11 @@
 #ifndef NUNCHUCKDRAW_H
 #define NUNCHUCKDRAW_H
 
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "nunchuck.h"
 
 void draw_init();
 void draw_cursor(NunchuckJoystick_t joy);
@@ -18,4 +18,4 @@ void updateCube(uint8_t expander);
 }
 #endif
 
-#endif // NUNCHUCK_H
+#endif

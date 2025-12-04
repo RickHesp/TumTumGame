@@ -1,5 +1,8 @@
 #include <brightness.h> 
 #include "drawGrid.h"
+#include <Adafruit_ILI9341.h>
+#include "nunchuck.h"
+#include "TWI.h"
 
 
 int main(void){
