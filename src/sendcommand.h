@@ -47,29 +47,41 @@ void send_command(uint8_t field, uint8_t address, uint8_t command){
     sending = 1;
 }
 
+void carrier_on() {
+    // Toggle OC0A on compare match (or whatever you want)
+    TCCR0A |= (1<<COM0A1);
+}
+
+void carrier_off() {
+    // Disconnect OC0A
+    TCCR0A &= ~(1<<COM0A1);
+    PORTD &= ~(1<<PORTD6); // explicitly pull low
+}
+
 ISR(TIMER2_COMPA_vect) {
     static uint16_t software_counter = 0;
 
     if (!sending) {
-        TCCR0A &= ~(1<<COM0A1); // carrier off
+        carrier_off();
     } else {
         uint8_t bit_index = half_bit_index / 2;
         uint8_t first_half = (half_bit_index % 2 == 0);
         uint8_t bit_value = (frame >> (13 - bit_index)) & 1;
 
         if ((bit_value && first_half) || (!bit_value && !first_half))
-            TCCR0A |= (1<<COM0A1);  // carrier on
+            carrier_on();
         else
-            TCCR0A &= ~(1<<COM0A1); // carrier off
+            carrier_off();
 
         half_bit_index++;
         if (half_bit_index >= 28) {
             half_bit_index = 0;
             sending = 0;
             toggle_bit ^= 1;
-            TCCR0A &= ~(1<<COM0A1);
+            carrier_off();
         }
     }
+
 
     // This version sends a command every second in stead of upon an event
     software_counter++;
@@ -79,32 +91,17 @@ ISR(TIMER2_COMPA_vect) {
     }
 }
 
-void init_ir_receiver() {
-    DDRD &= ~(1<<DDD2); // PD2 input
-    PORTD |= (1<<PORTD2); // pull-up
+// void init_ir_receiver() {
+//     DDRD &= ~(1<<DDD2); // PD2 input
+//     PORTD |= (1<<PORTD2); // pull-up
 
-    TCCR1B = (1<<CS10); // timer1 start, prescaler 1
-    EICRA = (1<<ISC00); // INT0 trigger ANY CHANGE
-    EIMSK = (1<<INT0); // enable INT0
-}
-
-ISR(INT0_vect) {
-    static uint16_t last_count = 0;
-    uint16_t now = TCNT1;
-    uint16_t pulse = now - last_count;
-    last_count = now;
-
-    if(pulse > (HALFBIT_US*16)) { //timer 1us
-        ir_buffer[ir_head] = 1;
-    } else {
-        ir_buffer[ir_head] = 0;
-    }
-
-    ir_head = (ir_head + 1) % BUFFER_SIZE;
-}
+//     TCCR1B = (1<<CS10); // timer1 start, prescaler 1
+//     EICRA = (1<<ISC00); // INT0 trigger ANY CHANGE
+//     EIMSK = (1<<INT0); // enable INT0
+// }
 
 void init_ir_sender(){
     init_carrier();
     init_sender();
-    init_ir_receiver();
+    // init_ir_receiver();
 }
