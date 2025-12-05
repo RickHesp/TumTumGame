@@ -74,3 +74,8 @@ ISR(TIMER2_COMPA_vect)
         send_next_command_flag = 1;
     }
 }
+
+void init_ir_sender(){
+    init_carrier();
+    init_sender();
+}

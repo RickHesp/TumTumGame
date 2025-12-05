@@ -5,15 +5,18 @@
 #include "sendcommand.h"
 #include "irreceiver.h"
 #include "brightness.h"
+#include "drawGrid.h"
 
 int main(void){
+    init();
+    grid_init();
+    brightness_init();
+    init_ir_sender();
+    init_ir_receiver();
+
     USART_Init();
     USART_Print("IR sender/receiver ready\r\n");
-    brightness_init();
-    init_carrier();
-    init_sender();
-    timer1_init();
-    init_receiver();
+    
     sei();
 
     char halfbits[32];

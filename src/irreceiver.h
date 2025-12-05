@@ -53,3 +53,8 @@ ISR(INT0_vect){
     uint8_t state = (PIND & (1<<IR_PIN)) ? 1 : 0;
     buffer_put(delta, state);
 }
+
+void init_ir_receiver(){
+    timer1_init();
+    init_receiver();
+}
