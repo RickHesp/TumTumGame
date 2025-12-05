@@ -104,11 +104,11 @@ void draw_cross(uint8_t cell, uint16_t color)
 
 void fill_grid(){
     for(uint8_t i=0; i<36; i++){
-        if(grid[i].boat==1){
+        if(own_grid[i].boat==1){
             color_cell(i, ILI9341_GREEN);
-        }if(grid[i].hit==1){
+        }if(own_grid[i].hit==1){
             draw_cross(i, ILI9341_RED);
-        }if(grid[i].selected==1){
+        }if(own_grid[i].selected==1){
             highlight_cell(i, ILI9341_BLACK);
         }
     }
