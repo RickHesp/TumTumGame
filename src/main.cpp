@@ -6,6 +6,8 @@
 #include "irreceiver.h"
 #include "brightness.h"
 #include "drawGrid.h"
+#include "rc5decoder.h"
+
 
 int main(void){
     init();
@@ -32,13 +34,23 @@ int main(void){
         uint8_t state;
         while(buffer_get(&delta, &state)){
             if(delta > 6000){
-                for(uint8_t i=0; i+1<halfcount; i+=2){
-                    if(halfbits[i]=='0' && halfbits[i+1]=='1') USART_putc('0');
-                    else if(halfbits[i]=='1' && halfbits[i+1]=='0') USART_putc('1');
-                    else USART_putc('?');
+                // Decode and store the frame
+                rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
+                
+                if(received_frame.valid){
+                    USART_Print("Valid frame - Addr: ");
+                    USART_putc('0' + (received_frame.address / 10));
+                    USART_putc('0' + (received_frame.address % 10));
+                    USART_Print(" Cmd: ");
+                    USART_putc('0' + (received_frame.command / 10));
+                    USART_putc('0' + (received_frame.command % 10));
+                    USART_Print(" Toggle: ");
+                    USART_putc('0' + received_frame.toggle_bit);
+                    USART_putc('\n');                  
+                } else {
+                    USART_Print("Invalid frame\n");
                 }
-                if(halfcount%2==1) USART_putc(halfbits[halfcount-1]);
-                USART_putc('\n');
+                
                 halfcount = 0;
                 continue;
             }
