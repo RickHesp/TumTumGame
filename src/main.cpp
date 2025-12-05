@@ -2,13 +2,25 @@
 #include "drawGrid.h"
 
 
+
 int main(void){
-    init();
+    init();//from arduino.h
+    initCells();
     grid_init();
     brightness_init();
     while (1)
     {
-      delay(1000);
-      color_cell(5, ILI9341_RED);
+      placeBoat(0);
+      selectCell(0);
+      hitCell(20);
+      hitCell(35);
+      placeBoat(20);
+      fill_grid();
+      delay(2000);
+      deselectCell(0);
+
+      
+      fill_grid();
+      delay(2000);
     }
 }
