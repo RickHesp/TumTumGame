@@ -4,11 +4,12 @@
 #include <usart.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
+#include "brightness.h"
 
 int main(void){
     USART_Init();
     USART_Print("IR sender/receiver ready\r\n");
-
+    brightness_init();
     init_carrier();
     init_sender();
     timer1_init();
