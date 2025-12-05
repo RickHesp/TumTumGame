@@ -10,6 +10,7 @@ extern "C" {
 
 /* prototypes */
 void USART_Init();
+void USART_putc(char c);
 void USART_Init_RXinterupt();
 void USART_Transmit(uint8_t b);
 uint8_t USART_Receive(void);
