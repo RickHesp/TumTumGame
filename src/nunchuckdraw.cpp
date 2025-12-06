@@ -29,15 +29,22 @@ int move_joysticks(NunchuckJoystick_t joy, int grid_size) {
     }
    
     
-    uint8_t row = start_index / grid_size;
-    uint8_t col = start_index % grid_size;
+    int row = start_index / grid_size;
+    int col = start_index % grid_size;
 
-    //update
-    uint8_t newRow = row + dy;
-    uint8_t newCol = col + dx;
-    color_cell(start_index, ILI9341_BLUE); //clear old position
+    int newRow = row + dy;
+    int newCol = col + dx;
+
+    // clamp boundaries
+    if (newRow < 0) newRow = 0;
+    if (newRow >= grid_size) newRow = grid_size - 1;
+    if (newCol < 0) newCol = 0;
+    if (newCol >= grid_size) newCol = grid_size - 1;
+
+    color_cell(start_index, ILI9341_BLUE);
 
     start_index = newRow * grid_size + newCol + 1;
+
 
     if(start_index < 1 || start_index > grid_size * grid_size){
         start_index -= (dy * grid_size + dx);

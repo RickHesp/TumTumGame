@@ -19,20 +19,25 @@ int main(void){
     brightness_init();
     nunchuck_init(EXPANDER_ADRESS);
     NunchuckJoystick_t joy;
+    int index;
     while (1)
     {
       unsigned long current = millis();
       if (current - lastmove >= movetime) {
-         joy = nunchuck_readJoystick(EXPANDER_ADRESS);   
-        int index = move_joysticks(joy, 6);
+        joy = nunchuck_readJoystick(EXPANDER_ADRESS);   
+        index = move_joysticks(joy, 6);
         color_cell(index, ILI9341_RED);
         lastmove = current;
       }
-      read_buttons(EXPANDER_ADRESS, joy.cButton, joy.zButton);
-      if (joy.cButton){
-        color_cell(1, ILI9341_GREEN);
-      }else if(joy.zButton){
-          color_cell(1, ILI9341_BLACK);
-      }
+    //   read_buttons(EXPANDER_ADRESS, joy.cButton, joy.zButton);
+    //   if (joy.cButton){
+    //     color_cell(1, ILI9341_GREEN);
+    //   }else if(joy.zButton){
+    //       color_cell(1, ILI9341_BLACK);
+    //   }
+
+        Serial.print("index: ");
+        Serial.println(index);
+
     }
 }
