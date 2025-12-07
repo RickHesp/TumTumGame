@@ -8,7 +8,8 @@
 #include "drawGrid.h"
 
 int main(void){
-    init();
+    init();//from arduino.h
+    initCells();
     grid_init();
     brightness_init();
     init_ir_sender();
