@@ -2,17 +2,16 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 #include <usart.h>
+#include <Arduino.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
 #include "brightness.h"
-#include "drawGrid.h"
+#include "display.h"
 #include "rc5decoder.h"
 
 
 int main(void){
     init();//from arduino.h
-    initCells();
-    grid_init();
     brightness_init();
     init_ir_sender();
     init_ir_receiver();
@@ -40,7 +39,7 @@ int main(void){
 
                 if(received_frame.valid){
                     selectCell(received_frame.command);      
-                    fill_grid();                   
+                    //fill_grid();                   
                 } else {
                     USART_Print("Invalid frame\n");
                 }
