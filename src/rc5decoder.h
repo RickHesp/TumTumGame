@@ -13,13 +13,18 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     rc5_frame_t frame = {0};
     
     // Sometimes the last half bit is missing
-    if (halfcount < 27) {
+    if (halfcount < 26) {
         frame.valid = 0;
         return frame;
     }
     
-    // When the last half bit is missing, it is the inverse of half bit 27
-    if (halfcount == 27) {
+    if (halfcount == 26) {
+        // Missing 2 half-bits - assume missing last bit
+        // Reconstruct based on second-to-last half-bit
+        halfbits[26] = (halfbits[25] == '0') ? '1' : '0';
+        halfbits[27] = (halfbits[26] == '0') ? '1' : '0';
+        halfcount = 28;
+    } else if (halfcount == 27) {
         halfbits[27] = (halfbits[26] == '0') ? '1' : '0';
         halfcount = 28;
     }
@@ -48,7 +53,9 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     frame.field_bit = (decoded >> 12) & 1;
     frame.toggle_bit = (decoded >> 11) & 1;
     frame.address = (decoded >> 6) & 0x1F;
-    frame.command = decoded & 0x3F;
+    uint8_t cmd_lower = decoded & 0x3F;  // C5-C0
+    uint8_t cmd_bit6 = (frame.field_bit == 0) ? 1 : 0;  // C6 = ~field_bit
+    frame.command = cmd_lower | (cmd_bit6 << 6);
     frame.valid = (bit_count == 14 && frame.start_bit == 1);
     
     return frame;

@@ -28,7 +28,7 @@ int main(void){
     while(1){
         if(send_next_command_flag){
             send_next_command_flag = 0;
-            send_command(0, 1, 0x65);
+            send_command(1, 1, 5);
         }
 
         uint16_t delta;
@@ -37,17 +37,10 @@ int main(void){
             if(delta > 6000){
                 // Decode and store the frame
                 rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
-                
+
                 if(received_frame.valid){
-                    USART_Print("Valid frame - Addr: ");
-                    USART_putc('0' + (received_frame.address / 10));
-                    USART_putc('0' + (received_frame.address % 10));
-                    USART_Print(" Cmd: ");
-                    USART_putc('0' + (received_frame.command / 10));
-                    USART_putc('0' + (received_frame.command % 10));
-                    USART_Print(" Toggle: ");
-                    USART_putc('0' + received_frame.toggle_bit);
-                    USART_putc('\n');                  
+                    selectCell(received_frame.command);      
+                    fill_grid();                   
                 } else {
                     USART_Print("Invalid frame\n");
                 }
