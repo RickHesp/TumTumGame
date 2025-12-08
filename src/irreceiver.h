@@ -5,6 +5,8 @@
 #define IR_PIN PD2
 #define BUFFER_SIZE 64
 
+extern volatile uint16_t nunchuck_timer;
+
 typedef struct {
     uint16_t delta;
     uint8_t state; // 0 = LOW, 1 = HIGH
@@ -34,7 +36,12 @@ static inline int buffer_get(uint16_t *val, uint8_t *state){
 void timer1_init(){
     TCCR1A = 0;
     TCCR1B = (1<<CS11); // prescaler 8 → 0.5us per tick
+    TIMSK1 = (1<<TOIE1); // Enable overflow interrupt
     TCNT1 = 0;
+}
+
+ISR(TIMER1_OVF_vect){
+    nunchuck_timer += 34;
 }
 
 void init_receiver(){

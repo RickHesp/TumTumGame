@@ -2,12 +2,19 @@
 #include <avr/interrupt.h>
 #include <stdint.h>
 #include <usart.h>
+#include <twi.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
 #include "brightness.h"
 #include "drawGrid.h"
 #include "rc5decoder.h"
+#include "nunchuck.h"
+#include "nunchuckdraw.h"
 
+#define EXPANDER_ADDRESS 0x52
+
+volatile uint16_t nunchuck_timer = 0;
+uint16_t movetime = 100; //time between moves in ms
 
 int main(void){
     init();//from arduino.h
@@ -16,6 +23,9 @@ int main(void){
     brightness_init();
     init_ir_sender();
     init_ir_receiver();
+    nunchuck_init(EXPANDER_ADDRESS);
+    NunchuckJoystick_t joy;
+    int index;
 
     USART_Init();
     USART_Print("IR sender/receiver ready\r\n");
@@ -29,6 +39,12 @@ int main(void){
         if(send_next_command_flag){
             send_next_command_flag = 0;
             send_command(1, 1, 5);
+        }
+        if (nunchuck_timer >= movetime) {
+          joy = nunchuck_readJoystick(EXPANDER_ADDRESS);   
+          index = move_joysticks(joy, 6);
+          fill_cell(index, ILI9341_RED);
+          nunchuck_timer = 0;
         }
 
         uint16_t delta;
