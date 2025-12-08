@@ -6,6 +6,8 @@
 #include "irreceiver.h"
 #include "brightness.h"
 #include "drawGrid.h"
+#include "rc5decoder.h"
+
 
 int main(void){
     init();//from arduino.h
@@ -26,20 +28,23 @@ int main(void){
     while(1){
         if(send_next_command_flag){
             send_next_command_flag = 0;
-            send_command(0, 1, 0x65);
+            send_command(1, 1, 5);
         }
 
         uint16_t delta;
         uint8_t state;
         while(buffer_get(&delta, &state)){
             if(delta > 6000){
-                for(uint8_t i=0; i+1<halfcount; i+=2){
-                    if(halfbits[i]=='0' && halfbits[i+1]=='1') USART_putc('0');
-                    else if(halfbits[i]=='1' && halfbits[i+1]=='0') USART_putc('1');
-                    else USART_putc('?');
+                // Decode and store the frame
+                rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
+
+                if(received_frame.valid){
+                    selectCell(received_frame.command);      
+                    fill_grid();                   
+                } else {
+                    USART_Print("Invalid frame\n");
                 }
-                if(halfcount%2==1) USART_putc(halfbits[halfcount-1]);
-                USART_putc('\n');
+                
                 halfcount = 0;
                 continue;
             }
