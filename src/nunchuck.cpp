@@ -4,24 +4,25 @@
 #include "nunchuckdraw.h"
 #include "nunchuck.h"
 
+#define EXPANDER_ADRESS 0x52
 
-void nunchuck_init(uint8_t expander){
+void nunchuck_init(){
     TWI_start();
-    TWI_write(expander<<1); //open nunchuck in write mode
+    TWI_write(EXPANDER_ADRESS<<1); //open nunchuck in write mode
     TWI_write(0x40); //handshake (open)
     TWI_write(0x0); //no encryption
-    _delay_ms(2);
+    //_delay_ms(2);
 }
 
-void nunchuck_read(uint8_t expander, uint8_t *buf){
-    TWI_write(expander<<1);
+void nunchuck_read(uint8_t *buf){
+    TWI_write(EXPANDER_ADRESS<<1);
     TWI_write(0x0); //no encryption
     TWI_stop();
 
     _delay_ms(5);
 
     TWI_start();
-    TWI_write(expander << 1);
+    TWI_write(EXPANDER_ADRESS << 1);
     for(int i = 0; i<5; i++){
         buf[i] = TWI_read_ACK();
     }
@@ -29,13 +30,13 @@ void nunchuck_read(uint8_t expander, uint8_t *buf){
     TWI_stop();
 }
 
-NunchuckJoystick_t nunchuck_readJoystick(uint8_t expander) {
+NunchuckJoystick_t nunchuck_readJoystick() {
     uint8_t buf[6];
     NunchuckJoystick_t joy;
 
     // Request new data
     TWI_start();
-    TWI_write(expander << 1);
+    TWI_write(EXPANDER_ADRESS << 1);
     TWI_write(0x00);
     TWI_stop();
 
@@ -43,7 +44,7 @@ NunchuckJoystick_t nunchuck_readJoystick(uint8_t expander) {
 
 
     TWI_start();
-    TWI_write((expander << 1) | 1); // read mode
+    TWI_write((EXPANDER_ADRESS << 1) | 1); // read mode
     for (int i = 0; i < 5; i++) {
         buf[i] = TWI_read_ACK();
     }
@@ -57,9 +58,9 @@ NunchuckJoystick_t nunchuck_readJoystick(uint8_t expander) {
     return joy;
 }
 
-void read_buttons(uint8_t expander, bool *cButton, bool *zButton) {
+void read_buttons(bool *cButton, bool *zButton) {
     uint8_t buf[6];
-    nunchuck_read(expander, buf);
+    nunchuck_read(buf);
 
     // get button states
     *zButton = !(buf[5] & 0x01);  // bit 0

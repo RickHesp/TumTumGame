@@ -9,8 +9,8 @@
 extern "C" {
 #endif
 
-int move_joysticks(NunchuckJoystick_t joy, int grid_size);
-void color_cell(uint8_t cell, uint16_t color);
+uint16_t move_joysticks(NunchuckJoystick_t joy);
+void joystick_select();
 
 #ifdef __cplusplus
 }

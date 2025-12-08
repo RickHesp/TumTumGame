@@ -4,6 +4,9 @@
 #include <avr/io.h>
 #include "grid.h"
 
+#define GRID_WIDTH 6//6 cells wide
+#define GRID_HEIGHT 6//6 cells tall
+
 //initialize the grid display
 void grid_init();
 

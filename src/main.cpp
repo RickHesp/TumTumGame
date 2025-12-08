@@ -11,16 +11,19 @@
 #include "nunchuck.h"
 #include "nunchuckdraw.h"
 #include "TWI.h"
+#include "micros_timer.h"
 
 #define EXPANDER_ADRESS 0x52
 uint16_t lastmove = 0;
-uint16_t movetime = 100; //time between moves in ms
 
 int main(void){
     init();//from arduino.h
     brightness_init();
     init_ir_sender();
     init_ir_receiver();
+    nunchuck_init();
+    grid_init();
+    initCells(own_grid);
 
     USART_Init();
     USART_Print("IR sender/receiver ready\r\n");
@@ -31,6 +34,14 @@ int main(void){
     uint8_t halfcount = 0;
 
     while(1){
+
+        joystick_select();
+        if(micros_timer() - lastmove > 200000){
+            fill_grid(own_grid);
+            lastmove = micros_timer();
+        }
+          static uint8_t send_next_command_flag = 1;
+
         if(send_next_command_flag){
             send_next_command_flag = 0;
             send_command(1, 1, 5);

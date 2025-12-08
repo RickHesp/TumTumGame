@@ -1,60 +1,76 @@
 #include "nunchuckdraw.h"
+#include "nunchuck.h"
+#include "micros_timer.h"
+#include "display.h"
 
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "nunchuck.h"
+
+#define CENTER_X 128
+#define CENTER_Y 128
+#define MARGIN 15
+#define MOVE_DELAY 200000//in microseconds
 
 static int start_index = 1; //cursor position
+NunchuckJoystick_t joy;
+uint16_t index=1;//default starting position
+uint16_t old_index=index;
+uint32_t last_move_time = 0;
 
-int move_joysticks(NunchuckJoystick_t joy, int grid_size) {
+uint16_t move_joysticks(NunchuckJoystick_t joy) {
     //difference in x,y
     int dx = 0;
     int dy = 0;
 
-//define movements
-    if(joy.x == 128 && joy.y == 128){
+    
+    //define movements with a small margin with no response to joystick movement
+    if(abs(joy.x - CENTER_X) < MARGIN && abs(joy.y - CENTER_Y) < MARGIN){
         return start_index; //no movement
-    }else{
-         if (joy.x < 100) {
-            dx = -1; // Move left
-        } else if (joy.x > 155) {
-            dx = 1;  // Move right
-        }else if (joy.y > 175) {
-            dy = -1; // Move up
-        } else if (joy.y < 90) {
-            dy = 1;  // Move down
+
     }
+    //give priority to larger movement(as to not move diagonally)
+    if(abs(joy.x - CENTER_X) >= abs(joy.y - CENTER_Y)){
+        if (joy.x < CENTER_X) {
+            dx = -1; // Move left
+        } else if (joy.x > CENTER_X) {
+            dx = 1;  // Move right
+        }
+    }else{
+        if (joy.y > CENTER_Y) {
+            dy = -1; // Move up
+        } else if (joy.y < CENTER_Y) {
+            dy = 1;  // Move down
+        }
     }
    
     
-    int row = start_index / grid_size;
-    int col = start_index % grid_size;
+    int row = start_index / GRID_WIDTH;
+    int col = start_index % GRID_HEIGHT;
 
-    int newRow = row + dy;
-    int newCol = col + dx;
-
-    // clamp boundaries
-    if (newRow < 0) newRow = 0;
-    if (newRow >= grid_size) newRow = grid_size - 1;
-    if (newCol < 0) newCol = 0;
-    if (newCol >= grid_size) newCol = grid_size - 1;
-
-    color_cell(start_index, ILI9341_BLUE);
-
-    start_index = newRow * grid_size + newCol + 1;
-
-
-    if(start_index < 1 || start_index > grid_size * grid_size){
-        start_index -= (dy * grid_size + dx);
-    }else if(newCol < 0 || newCol >= grid_size){
-        start_index -= (dy * grid_size + dx);
+    if(dx!=0){
+        col=(col + dx + GRID_WIDTH) % GRID_WIDTH;
+    }
+    if(dy!=0){
+        row=(row + dy + GRID_HEIGHT) % GRID_HEIGHT;
     }
 
+    old_index = start_index;
+    start_index = row * GRID_WIDTH + col;
 
-    return start_index;
+    return start_index;  
+}
 
+void joystick_select(){
+    uint32_t current = micros_timer();
+    if(current - last_move_time > MOVE_DELAY){
+        joy = nunchuck_readJoystick();
+        index = move_joysticks(joy);
+        selectCell(index);
+        deselectCell(old_index);
+        last_move_time = current;
+    }
 }
 
 #ifdef __cplusplus

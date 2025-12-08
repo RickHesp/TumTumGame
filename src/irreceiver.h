@@ -35,6 +35,7 @@ void timer1_init(){
     TCCR1A = 0;
     TCCR1B = (1<<CS11); // prescaler 8 → 0.5us per tick
     TCNT1 = 0;
+    TIMSK1 = (1<<TOIE1);//enable overflow interrupts on timer1
 }
 
 void init_receiver(){
