@@ -11,10 +11,11 @@ void nunchuck_init(){
     TWI_write(EXPANDER_ADRESS<<1); //open nunchuck in write mode
     TWI_write(0x40); //handshake (open)
     TWI_write(0x0); //no encryption
-    //_delay_ms(2);
+    _delay_ms(2);
 }
 
 void nunchuck_read(uint8_t *buf){
+    TWI_start();
     TWI_write(EXPANDER_ADRESS<<1);
     TWI_write(0x0); //no encryption
     TWI_stop();
@@ -22,7 +23,7 @@ void nunchuck_read(uint8_t *buf){
     _delay_ms(5);
 
     TWI_start();
-    TWI_write(EXPANDER_ADRESS << 1);
+    TWI_write(EXPANDER_ADRESS << 1|1);
     for(int i = 0; i<5; i++){
         buf[i] = TWI_read_ACK();
     }
@@ -40,7 +41,7 @@ NunchuckJoystick_t nunchuck_readJoystick() {
     TWI_write(0x00);
     TWI_stop();
 
-    _delay_ms(5);
+    _delay_ms(1);
 
 
     TWI_start();
@@ -54,7 +55,8 @@ NunchuckJoystick_t nunchuck_readJoystick() {
     // Extract joystick values
     joy.x = buf[0];
     joy.y = buf[1];
-
+    joy.zButton = !(buf[5] & 0x01); // bit 1
+    joy.cButton = !((buf[5] >> 1) & 0x01); // bit 0
     return joy;
 }
 

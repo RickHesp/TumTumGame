@@ -108,7 +108,7 @@ void fill_grid(gridCell *grid){
             draw_cross(i, ILI9341_RED);
         }if(grid[i].selected==1){
             highlight_cell(i, ILI9341_BLACK);
-        }else{
+        }if(grid[i].boat==0 && grid[i].hit==0 && grid[i].selected==0){
             color_cell(i, ILI9341_BLUE);
         }
     }

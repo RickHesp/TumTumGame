@@ -36,7 +36,8 @@ int main(void){
     while(1){
 
         joystick_select();
-        if(micros_timer() - lastmove > 200000){
+        nunchuck_place_boat();
+        if(micros_timer() - lastmove > 1000){
             fill_grid(own_grid);
             lastmove = micros_timer();
         }
