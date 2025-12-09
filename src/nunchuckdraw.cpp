@@ -61,20 +61,30 @@ uint16_t move_joysticks(NunchuckJoystick_t joy) {
     return start_index;  
 }
 
+<<<<<<< HEAD
 uint16_t joystick_select(){
     joy = nunchuck_readJoystick();
     index = move_joysticks(joy);
     selectCell(index);
     deselectCell(old_index);
     return index;
+=======
+void joystick_select(){
+    uint32_t current = micros_timer();
+    if(current - last_time > MOVE_DELAY){
+        joy = nunchuck_readJoystick();
+        index = move_joysticks(joy);
+        selectCell(index);
+        deselectCell(old_index);
+        last_time = current;
+    }
+>>>>>>> parent of c449dd1 (send nunchuck signal)
 }
 
-bool nunchuck_place_boat(){
+void nunchuck_place_boat(){
     if(joy.zButton){
         placeBoat(index);
-        return true;
     }
-    return false;
 }
 
 #ifdef __cplusplus
