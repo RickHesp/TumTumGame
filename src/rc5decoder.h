@@ -46,6 +46,17 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
             frame.valid = 0;
             return frame;
         }
+        /*summary
+        possible fix for rc5 decoding
+        the manchester decoding this way bits don't shift weirdly
+        uint8_t bit;
+        if (halfbits[i]=='0' && halfbits[i+1]=='1') bit = 0;
+        else if (halfbits[i]=='1' && halfbits[i+1]=='0') bit = 1;
+        else { frame.valid = 0; return frame; }
+
+        decoded |= (bit << (13 - bit_count));
+        bit_count++;
+        */
     }
     
     // Build struct

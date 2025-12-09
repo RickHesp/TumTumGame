@@ -28,7 +28,6 @@ uint16_t move_joysticks(NunchuckJoystick_t joy) {
     //define movements with a small margin with no response to joystick movement
     if(abs(joy.x - CENTER_X) < MARGIN && abs(joy.y - CENTER_Y) < MARGIN){
         return start_index; //no movement
-
     }
     //give priority to larger movement(as to not move diagonally)
     if(abs(joy.x - CENTER_X) >= abs(joy.y - CENTER_Y)){
