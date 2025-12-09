@@ -35,23 +35,23 @@ int main(void){
 
     while(1){
         static uint8_t send_next_command_flag = 0;
-
+ //nunchuck code
         uint16_t selected_cell = joystick_select();
         if(nunchuck_place_boat()){
           send_next_command_flag = 1;
+          fill_grid(own_grid);
         }
-        if(micros_timer() - lastmove > 100){
-            fill_grid(own_grid);
-            lastmove = micros_timer();
-
-        }
+        // if(micros_timer() - lastmove > 100){
+        //     fill_grid(own_grid);
+        //     lastmove = micros_timer();
+        // }
 
         if(send_next_command_flag){
             send_next_command_flag = 0;
             USART_Print("Z");
             send_command(1, 1, selected_cell);
         }
-
+// IR receiver code
         uint16_t delta;
         uint8_t state;
         while(buffer_get(&delta, &state)){
