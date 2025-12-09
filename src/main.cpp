@@ -37,7 +37,15 @@ int main(void){
             if(delta > 6000){
                 // Decode and store the frame
                 rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
-
+                    USART_Print("Valid frame - Addr: ");
+                    USART_putc('0' + (received_frame.address / 10));
+                    USART_putc('0' + (received_frame.address % 10));
+                    USART_Print(" Cmd: ");
+                    USART_putc('0' + (received_frame.command / 10));
+                    USART_putc('0' + (received_frame.command % 10));
+                    USART_Print(" Toggle: ");
+                    USART_putc('0' + received_frame.toggle_bit);
+                    USART_putc('\n');   
                 if(received_frame.valid){
                     selectCell(received_frame.command);      
                     fill_grid();                   
