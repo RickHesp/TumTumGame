@@ -62,7 +62,7 @@ uint16_t move_joysticks(NunchuckJoystick_t joy) {
     return start_index;  
 }
 
-void joystick_select(){
+uint16_t joystick_select(){
     uint32_t current = micros_timer();
     if(current - last_time > MOVE_DELAY){
         joy = nunchuck_readJoystick();
@@ -71,12 +71,15 @@ void joystick_select(){
         deselectCell(old_index);
         last_time = current;
     }
+    return index;
 }
 
-void nunchuck_place_boat(){
+bool nunchuck_place_boat(){
     if(joy.zButton){
         placeBoat(index);
+        return true;
     }
+    return false;
 }
 
 #ifdef __cplusplus

@@ -14,6 +14,8 @@ typedef struct {
     bool zButton;
 } NunchuckJoystick_t;
 
+extern NunchuckJoystick_t joy;
+
 void nunchuck_init( );
 void nunchuck_read(uint8_t *buf);
 NunchuckJoystick_t nunchuck_readJoystick();

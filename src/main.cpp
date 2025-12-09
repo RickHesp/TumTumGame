@@ -34,31 +34,37 @@ int main(void){
     uint8_t halfcount = 0;
 
     while(1){
+        static uint8_t send_next_command_flag = 0;
 
-        joystick_select();
-        nunchuck_place_boat();
-        if(micros_timer() - lastmove > 1000){
+        uint16_t selected_cell = joystick_select();
+        if(nunchuck_place_boat()){
+          send_next_command_flag = 1;
+        }
+        if(micros_timer() - lastmove > 100){
             fill_grid(own_grid);
             lastmove = micros_timer();
+
         }
-          static uint8_t send_next_command_flag = 1;
 
         if(send_next_command_flag){
             send_next_command_flag = 0;
-            send_command(1, 1, 5);
+            USART_Print("Z");
+            send_command(1, 1, selected_cell);
         }
 
         uint16_t delta;
         uint8_t state;
         while(buffer_get(&delta, &state)){
-            if(delta > 6000){
+            if(delta > 5000){
                 // Decode and store the frame
                 rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
 
                 if(received_frame.valid){
                     selectCell(received_frame.command);      
-                    //fill_grid();                   
-                } else {
+                    USART_putc('0' + (received_frame.command / 10));
+                    USART_putc('0' + (received_frame.command % 10));
+                    USART_putc('\n');
+                  } else {
                     USART_Print("Invalid frame\n");
                 }
                 
