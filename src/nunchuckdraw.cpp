@@ -10,8 +10,8 @@ extern "C" {
 
 #define CENTER_X 128
 #define CENTER_Y 128
-#define MARGIN 5
-#define MOVE_DELAY 1//in microseconds
+#define MARGIN 15
+#define MOVE_DELAY 0
 
 static int start_index = 0; //cursor position
 NunchuckJoystick_t joy;
@@ -62,14 +62,10 @@ uint16_t move_joysticks(NunchuckJoystick_t joy) {
 }
 
 uint16_t joystick_select(){
-    uint32_t current = micros_timer();
-    if(current - last_time > MOVE_DELAY){
-        joy = nunchuck_readJoystick();
-        index = move_joysticks(joy);
-        selectCell(index);
-        deselectCell(old_index);
-        last_time = current;
-    }
+    joy = nunchuck_readJoystick();
+    index = move_joysticks(joy);
+    selectCell(index);
+    deselectCell(old_index);
     return index;
 }
 
