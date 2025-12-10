@@ -34,11 +34,10 @@ int main(void){
     uint8_t halfcount = 0;
 
     while(1){
-        static uint8_t send_next_command_flag = 0;
-
         uint16_t selected_cell = joystick_select();
         if(nunchuck_place_boat()){
-          send_next_command_flag = 1;
+            USART_Print("Z");
+            send_command(1, 1, selected_cell);
         }
         if(micros_timer() - lastmove > 100){
             fill_grid(own_grid);
@@ -46,38 +45,41 @@ int main(void){
 
         }
 
-        if(send_next_command_flag){
-            send_next_command_flag = 0;
-            USART_Print("Z");
-            send_command(1, 1, selected_cell);
+    uint16_t delta;
+    uint8_t state;
+    while(buffer_get(&delta, &state)){
+    
+    if(delta > 5000){      
+        // Decode and store the frame
+        rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
+        
+        if(received_frame.valid){
+            selectCell(received_frame.command);      
+            USART_putc('0' + (received_frame.command / 10));
+            USART_putc('0' + (received_frame.command % 10));
+            USART_putc('\n');
+        } else {
+            USART_Print("Invalid frame\n");
         }
-
-        uint16_t delta;
-        uint8_t state;
-        while(buffer_get(&delta, &state)){
-            if(delta > 5000){
-                // Decode and store the frame
-                rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
-
-                if(received_frame.valid){
-                    selectCell(received_frame.command);      
-                    USART_putc('0' + (received_frame.command / 10));
-                    USART_putc('0' + (received_frame.command % 10));
-                    USART_putc('\n');
-                  } else {
-                    USART_Print("Invalid frame\n");
-                }
-                
-                halfcount = 0;
-                continue;
-            }
-
-            uint8_t count = 0;
-            if(delta < 2400) count = 1;
-            else if(delta > 2800) count = 2;
-
-            for(uint8_t i=0; i<count && halfcount<32; i++)
-                halfbits[halfcount++] = state ? '0' : '1';
-        }
+        
+        halfcount = 0;
+        continue;
     }
+
+    // Ignore very short pulses
+    if(delta < 800) continue;
+
+    // Count halfbits based on timing
+    uint8_t count = 0;
+    if(delta >= 1400 && delta <= 2600) {
+        count = 1;
+    } else if(delta >= 2900 && delta <= 4200) {
+        count = 2;
+    }
+
+    // Add halfbits to buffer
+    for(uint8_t i=0; i<count && halfcount<32; i++)
+        halfbits[halfcount++] = state ? '0' : '1';
+}
+}
 }

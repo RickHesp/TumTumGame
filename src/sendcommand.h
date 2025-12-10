@@ -7,7 +7,7 @@ volatile uint16_t frame;
 volatile uint8_t half_bit_index = 0;
 volatile uint8_t sending = 0;
 volatile uint8_t toggle_bit = 0;
-volatile uint8_t send_next_command_flag = 0;
+// volatile uint8_t send_next_command_flag = 0;
 
 void init_carrier() {
     DDRD |= (1 << IRLED);       // PD6 = OC0A
@@ -44,7 +44,7 @@ void send_command(uint8_t field, uint8_t address, uint8_t command)
 
 ISR(TIMER2_COMPA_vect)
 {
-    static uint16_t software_counter = 0;
+    // static uint16_t software_counter = 0;
 
     if (!sending) {
         TCCR0A &= ~(1<<COM0A1); // carrier uit
@@ -68,11 +68,11 @@ ISR(TIMER2_COMPA_vect)
     }
 
     // software timer voor periodiek zenden (1s)
-    software_counter++;
-    if(software_counter >= 1125){ // 1125 * 889us ≈ 1 s
-        software_counter = 0;
-        send_next_command_flag = 1;
-    }
+    // software_counter++;
+    // if(software_counter >= 1125){ // 1125 * 889us ≈ 1 s
+    //     software_counter = 0;
+    //     send_next_command_flag = 1;
+    // }
 }
 
 void init_ir_sender(){
