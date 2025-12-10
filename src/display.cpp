@@ -10,12 +10,12 @@
 #define TFT_RST  8
 
 //edit these to change grid size
-#define grid_width 6//6 cells wide
-#define grid_height 6//6 cells tall
+#define GRID_WIDTH 6//6 cells wide
+#define GRID_HEIGHT 6//6 cells tall
 #define grid_pixel_width 240
 #define grid_pixel_height 240
-#define cell_pixel_width (grid_pixel_width / grid_width)//40px per cell
-#define cell_pixel_height (grid_pixel_height / grid_height)//40px per cell
+#define cell_pixel_width (grid_pixel_width / GRID_WIDTH)//40px per cell
+#define cell_pixel_height (grid_pixel_height / GRID_HEIGHT)//40px per cell
 
 static uint8_t x=0;
 static uint8_t y=0;
@@ -30,8 +30,8 @@ void grid_init(){
     int w = 240; //240px
     int h = tft.height(); //240px
 
-    int horizontal_val = w/grid_width;
-    int vertical_val = h/grid_height;
+    int horizontal_val = w/GRID_WIDTH;
+    int vertical_val = h/GRID_HEIGHT;
 
     //start drawing (6x6 field)
     tft.fillScreen(ILI9341_BLUE);
@@ -47,8 +47,8 @@ void grid_init(){
 void get_cell_location(uint8_t cell){
     //calculate row and column
     uint8_t index = cell;
-    uint8_t row =index / grid_width;
-    uint8_t col =index % grid_height;
+    uint8_t row =index / GRID_WIDTH;
+    uint8_t col =index % GRID_HEIGHT;
 
     //calculate x and y position
     x = col * cell_pixel_width;
@@ -108,6 +108,8 @@ void fill_grid(gridCell *grid){
             draw_cross(i, ILI9341_RED);
         }if(grid[i].selected==1){
             highlight_cell(i, ILI9341_BLACK);
+        }if(grid[i].boat==0 && grid[i].hit==0 && grid[i].selected==0){
+            color_cell(i, ILI9341_BLUE);
         }
     }
 }

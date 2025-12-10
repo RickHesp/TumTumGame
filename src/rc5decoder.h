@@ -1,4 +1,9 @@
 #include <stdint.h>
+#include <usart.h>
+#include <stdio.h>
+
+    char halfbits[32];
+    uint8_t halfcount = 0;
 
 typedef struct {
     uint8_t start_bit;
@@ -11,52 +16,96 @@ typedef struct {
 
 rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     rc5_frame_t frame = {0};
-    
-    // Sometimes the last half bit is missing
-    if (halfcount < 26) {
-        frame.valid = 0;
-        return frame;
+     
+    // Skip leading invalid pairs (00 or 11)
+    uint8_t start_offset = 0;
+    while (start_offset + 1 < halfcount) {
+        if((halfbits[start_offset] == '0' && halfbits[start_offset+1] == '0') ||
+           (halfbits[start_offset] == '1' && halfbits[start_offset+1] == '1')) {
+
+            start_offset += 2;
+        } else {
+            break;
+        }
     }
     
-    if (halfcount == 26) {
-        // Missing 2 half-bits - assume missing last bit
-        // Reconstruct based on second-to-last half-bit
-        halfbits[26] = (halfbits[25] == '0') ? '1' : '0';
-        halfbits[27] = (halfbits[26] == '0') ? '1' : '0';
-        halfcount = 28;
-    } else if (halfcount == 27) {
-        halfbits[27] = (halfbits[26] == '0') ? '1' : '0';
-        halfcount = 28;
+    // Fix odd half-bit count
+    uint8_t adjusted_count = halfcount - start_offset;
+    if (adjusted_count % 2 == 1) {
+        halfbits[halfcount] = (halfbits[halfcount-1] == '0') ? '1' : '0';
+        halfcount++;
+        adjusted_count++;
     }
     
-    // Decode Manchester encoding
+    // Decode Manchester pairs
     uint16_t decoded = 0;
     uint8_t bit_count = 0;
     
-    for (uint8_t i = 0; i + 1 < halfcount && bit_count < 14; i += 2) {
+    for (uint8_t i = start_offset; i + 1 < halfcount && bit_count < 14; i += 2) {
         if (halfbits[i] == '0' && halfbits[i+1] == '1') {
-            // 0
             bit_count++;
-        } else if (halfbits[i] == '1' && halfbits[i+1] == '0') {
-            // 1
+        } 
+        else if (halfbits[i] == '1' && halfbits[i+1] == '0') {
             decoded |= (1 << (13 - bit_count));
             bit_count++;
-        } else {
-            // Invalid Manchester encoding
+        } 
+        else {
+            USART_Print("\nInvalid Manchester pair\n");
             frame.valid = 0;
             return frame;
         }
     }
-    
-    // Build struct
+
     frame.start_bit = (decoded >> 13) & 1;
     frame.field_bit = (decoded >> 12) & 1;
     frame.toggle_bit = (decoded >> 11) & 1;
-    frame.address = (decoded >> 6) & 0x1F;
-    uint8_t cmd_lower = decoded & 0x3F;  // C5-C0
-    uint8_t cmd_bit6 = (frame.field_bit == 0) ? 1 : 0;  // C6 = ~field_bit
-    frame.command = cmd_lower | (cmd_bit6 << 6);
-    frame.valid = (bit_count == 14 && frame.start_bit == 1);
-    
+    frame.address   = (decoded >> 6)  & 0x1F;
+
+    uint8_t cmd_lower = decoded & 0x3F;
+    uint8_t cmd_bit6  = (frame.field_bit == 0) ? 1 : 0;
+    frame.command     = cmd_lower | (cmd_bit6 << 6);
+
+    // Mark as valid if the command was decoded.
+    frame.valid = 1;
+
     return frame;
+}
+
+void decode_ir(){
+    uint16_t delta;
+    uint8_t state;
+    while(buffer_get(&delta, &state)){
+    
+    if(delta > 5000){      
+        // Decode and store the frame
+        rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
+        
+        if(received_frame.valid){
+            selectCell(received_frame.command);      
+            USART_putc('0' + (received_frame.command / 10));
+            USART_putc('0' + (received_frame.command % 10));
+            USART_putc('\n');
+        } else {
+            USART_Print("Invalid frame\n");
+        }
+        
+        halfcount = 0;
+        continue;
+    }
+
+    // Ignore very short pulses
+    if(delta < 800) continue;
+
+    // Count halfbits based on timing
+    uint8_t count = 0;
+    if(delta >= 1400 && delta <= 2600) {
+        count = 1;
+    } else if(delta >= 2900 && delta <= 4200) {
+        count = 2;
+    }
+
+    // Add halfbits to buffer
+    for(uint8_t i=0; i<count && halfcount<32; i++)
+        halfbits[halfcount++] = state ? '0' : '1';
+}
 }
