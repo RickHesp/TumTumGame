@@ -74,12 +74,11 @@ uint16_t joystick_select(){
     return index;
 }
 
-bool nunchuck_place_boat(){
+uint8_t nunchuck_place_boat(){
     if(joy.zButton){
-        placeBoat(index);
-        return true;
+        return index;
     }
-    return false;
+    return 0;
 }
 
 #ifdef __cplusplus

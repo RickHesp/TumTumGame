@@ -15,6 +15,7 @@
 
 #define EXPANDER_ADRESS 0x52
 uint16_t lastmove = 0;
+uint8_t boatindex = 0;
 
 int main(void){
     init();//from arduino.h
@@ -32,15 +33,40 @@ int main(void){
 
     while(1){
         uint16_t selected_cell = joystick_select();
-        if(nunchuck_place_boat()){
-            USART_Print("Z");
+        boatindex = nunchuck_place_boat();
+        if(boatindex > 0){
             send_command(1, 1, selected_cell);
+
+            // await confirmation
+            // placeBoat(index);
         }
         if(micros_timer() - lastmove > 100){
             fill_grid(own_grid);
             lastmove = micros_timer();
 
         }
-    decode_ir();   
+    rc5_frame_t frame = decode_ir();  
+    if(frame.valid){
+        if(frame.command == 63){
+            placeBoat(boatindex);
+
+        }
+        else{
+            send_command(1, 1, 63);
+        }
+
+
+        // if it is player sender turn
+        // send back confirmation
+        // selectCell(received_frame.command);      
+        // else
+        // if player has received message before
+        // send back confirmation
+        // else
+        // error
+
+        // send confirmation:
+    }
+    USART_putc('0' + frame.valid); 
     }
 }

@@ -11,7 +11,7 @@ extern "C" {
 
 uint16_t move_joysticks(NunchuckJoystick_t joy);
 uint16_t joystick_select();
-bool nunchuck_place_boat();
+uint8_t nunchuck_place_boat();
 
 #ifdef __cplusplus
 }

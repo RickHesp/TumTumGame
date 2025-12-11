@@ -71,20 +71,22 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     return frame;
 }
 
-void decode_ir(){
+rc5_frame_t decode_ir(){
     uint16_t delta;
     uint8_t state;
+    rc5_frame_t received_frame;
     while(buffer_get(&delta, &state)){
     
     if(delta > 5000){      
         // Decode and store the frame
-        rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
+        received_frame = decode_rc5(halfbits, halfcount);
         
         if(received_frame.valid){
             selectCell(received_frame.command);      
             USART_putc('0' + (received_frame.command / 10));
             USART_putc('0' + (received_frame.command % 10));
             USART_putc('\n');
+            return received_frame;
         } else {
             USART_Print("Invalid frame\n");
         }
@@ -107,5 +109,6 @@ void decode_ir(){
     // Add halfbits to buffer
     for(uint8_t i=0; i<count && halfcount<32; i++)
         halfbits[halfcount++] = state ? '0' : '1';
-}
+    }
+    return received_frame;
 }
