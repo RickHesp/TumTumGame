@@ -11,6 +11,13 @@ uint32_t micros_timer(void){
   return ticks /2;//0.5 uS per tick
 }
 
+uint8_t one_second_passed(){
+  if(t1_overflows >= 31){
+    t1_overflows = 0;
+    return 1;
+  }else{return 0;}
+}
+
 ISR(TIMER1_OVF_vect){
   t1_overflows++;
 }

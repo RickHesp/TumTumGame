@@ -1,6 +1,5 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
 #include "brightness.h"
 
 #define BACKLIGHT DDD5
