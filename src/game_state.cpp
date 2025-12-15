@@ -1,53 +1,28 @@
 #include "game_state.h"
 #include "grid.h"
-#include "display.h"
-#include <Arduino.h>
+#include "nunchuckdraw.h"
+#include "rc5decoder.h"
 
 
+bool boat_placement(gridCell *grid){
+    // Code to handle boat placement
+    static uint8_t placed_boats = 0;
 
-GameState currentGameState = STATE_START;
-
-void HandleGameState(GameState gameState)
-{   
-
-    switch (gameState)
-    {
-    case STATE_START:
-        currentGameState=STATE_PLACE_BOATS;
-        break;
-
-    case STATE_PLACE_BOATS:
-        // Code to handle boat placement
-        grid_init();
-        initCells(own_grid);
-        placeBoat(0);
-        placeBoat(7);
-        fill_grid(own_grid);
-        break;
-
-    case STATE_SETUP_GAME:
-        // Code to handle game setup like starting player and initializing variables
-        grid_init();
-        initCells(opp_grid);
-        oppPlaceBoat(14);
-        oppPlaceBoat(21);
-        fill_grid(opp_grid);
-        currentGameState=STATE_PLACE_BOATS;
-        break;
-
-    case STATE_YOUR_TURN:    
-        fill_grid(own_grid);
-        break;
-
-    case STATE_OPPONENT_TURN:
-        // Code to handle opponent's turn
-        break;
-
-    case STATE_GAME_OVER:
-        // Code to handle game over
-        break;
-
-    default:
-        break;
+    uint8_t* index_array = joystick_select_boat(nunchuck_c_button());
+    if(nunchuck_z_button()){
+        //check if 4 boats have been placed
+        if(placed_boats > 3){
+            return true; //all boats placed
+        }
+        //check if no boat is present at selected cells
+        for(uint8_t i=0; i<sizeof(index_array)/sizeof(index_array[0]); i++){
+            if(grid[index_array[i]].boat == 1) return false; //boat already present, do not place
+        }
+        //if no boats are present, place boat cells
+        for(uint8_t i=0; i<sizeof(index_array)/sizeof(index_array[0]); i++){
+            placeBoat(index_array[i]);//place boat at selected cell
+        }
+        placed_boats++;
     }
+    return false;
 }

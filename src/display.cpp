@@ -100,9 +100,10 @@ void draw_cross(uint8_t cell, uint16_t color)
     tft.drawLine(x+cell_pixel_width,y+1,x+1,y+cell_pixel_height,color);//shifted slightly
 }
 
-void fill_grid(gridCell *grid){
+
+void fill_grid(gridCell *grid, uint8_t is_own_grid){
     for(uint8_t i=0; i<36; i++){
-        if(grid[i].boat==1){
+        if(grid[i].boat==1&& is_own_grid){
             color_cell(i, ILI9341_GREEN);
         }if(grid[i].hit==1){
             draw_cross(i, ILI9341_RED);
