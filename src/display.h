@@ -14,6 +14,8 @@ void grid_init();
 void color_cell(uint8_t cell, uint16_t color);
 void highlight_cell(uint8_t cell, uint16_t color);
 void draw_cross(uint8_t cell, uint16_t color);
+void drawButton();
+void Startscreen_init();
 
 //draw the grid from gridcell array
 void fill_grid(gridCell *grid);

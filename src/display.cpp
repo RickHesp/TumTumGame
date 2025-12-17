@@ -113,3 +113,23 @@ void fill_grid(gridCell *grid){
         }
     }
 }
+
+void drawButton(){
+    tft.begin();
+    tft.setRotation(1); //320x240
+    tft.fillRoundRect(250, 50, 60, 40, 10, ILI9341_WHITE);
+    tft.setCursor(260, 60);
+    tft.setTextColor(ILI9341_BLACK);
+    tft.setTextSize(2);
+    tft.print("Start");
+}
+
+void Startscreen_init(){
+    tft.begin();
+    tft.setRotation(1); //320x240
+    tft.fillScreen(ILI9341_BLUE);
+    tft.setCursor(80, 100);
+    tft.setTextSize(3);
+    tft.setTextColor(ILI9341_BLACK);
+    tft.print("Battleship");
+}
