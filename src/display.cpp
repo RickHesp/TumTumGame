@@ -112,9 +112,9 @@ void draw_cross(uint8_t cell, uint16_t color)
 }
 
 
-void fill_grid(gridCell *grid, uint8_t is_own_grid){
+void fill_grid(gridCell *grid){
     for(uint8_t i=0; i<36; i++){
-        if(grid[i].boat==1&& is_own_grid){
+        if(grid[i].boat==1){
             color_cell(i, ILI9341_GREEN);
         }if(grid[i].hit==1){
             draw_cross(i, ILI9341_RED);
