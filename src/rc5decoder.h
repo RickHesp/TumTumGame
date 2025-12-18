@@ -1,10 +1,9 @@
+
 #include <stdint.h>
 #include <usart.h>
 #include <stdio.h>
-
     char halfbits[32];
     uint8_t halfcount = 0;
-
 typedef struct {
     uint8_t start_bit;
     uint8_t field_bit;
@@ -13,7 +12,6 @@ typedef struct {
     uint8_t command;
     uint8_t valid;
 } rc5_frame_t;
-
 rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     rc5_frame_t frame = {0};
      
@@ -22,7 +20,6 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
     while (start_offset + 1 < halfcount) {
         if((halfbits[start_offset] == '0' && halfbits[start_offset+1] == '0') ||
            (halfbits[start_offset] == '1' && halfbits[start_offset+1] == '1')) {
-
             start_offset += 2;
         } else {
             break;
@@ -50,52 +47,36 @@ rc5_frame_t decode_rc5(char* halfbits, uint8_t halfcount) {
             bit_count++;
         } 
         else {
-            USART_Print("\nInvalid Manchester pair\n");
             frame.valid = 0;
             return frame;
         }
     }
-
     frame.start_bit = (decoded >> 13) & 1;
     frame.field_bit = (decoded >> 12) & 1;
     frame.toggle_bit = (decoded >> 11) & 1;
     frame.address   = (decoded >> 6)  & 0x1F;
-
     uint8_t cmd_lower = decoded & 0x3F;
     uint8_t cmd_bit6  = (frame.field_bit == 0) ? 1 : 0;
     frame.command     = cmd_lower | (cmd_bit6 << 6);
-
     // Mark as valid if the command was decoded.
     frame.valid = 1;
-
     return frame;
 }
-
-void decode_ir(){
+rc5_frame_t decode_ir(){
     uint16_t delta;
     uint8_t state;
+    rc5_frame_t received_frame;
     while(buffer_get(&delta, &state)){
     
     if(delta > 5000){      
         // Decode and store the frame
-        rc5_frame_t received_frame = decode_rc5(halfbits, halfcount);
-        
-        if(received_frame.valid){
-            selectCell(received_frame.command);      
-            USART_putc('0' + (received_frame.command / 10));
-            USART_putc('0' + (received_frame.command % 10));
-            USART_putc('\n');
-        } else {
-            USART_Print("Invalid frame\n");
-        }
+        received_frame = decode_rc5(halfbits, halfcount);
         
         halfcount = 0;
-        continue;
+        return received_frame;
     }
-
     // Ignore very short pulses
     if(delta < 800) continue;
-
     // Count halfbits based on timing
     uint8_t count = 0;
     if(delta >= 1400 && delta <= 2600) {
@@ -103,9 +84,9 @@ void decode_ir(){
     } else if(delta >= 2900 && delta <= 4200) {
         count = 2;
     }
-
     // Add halfbits to buffer
     for(uint8_t i=0; i<count && halfcount<32; i++)
         halfbits[halfcount++] = state ? '0' : '1';
 }
+    return received_frame;
 }
