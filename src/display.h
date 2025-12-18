@@ -16,5 +16,6 @@ void highlight_cell(uint8_t cell, uint16_t color);
 void draw_cross(uint8_t cell, uint16_t color);
 
 //draw the grid from gridcell array
-void fill_grid(gridCell *grid, uint8_t is_own_grid);
+void fill_grid(gridCell *grid);
+void update_grid();
 #endif

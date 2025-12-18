@@ -1,3 +1,4 @@
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
@@ -12,10 +13,7 @@
 #include "nunchuckdraw.h"
 #include "TWI.h"
 #include "micros_timer.h"
-#include "game_state.h"
-
-#define EXPANDER_ADRESS 0x52
-uint16_t lastmove = 0;
+#include "gamelogic.h"
 
 enum GameState {
     STATE_START,
@@ -36,12 +34,8 @@ int main(void){
     nunchuck_init();
     grid_init();
     initCells(own_grid);
-
-    USART_Init();
-    USART_Print("IR sender/receiver ready\r\n");
-    
+    USART_Init();    
     sei();
-
     while(1){
     switch (currentGameState)
     {
@@ -58,10 +52,7 @@ int main(void){
 
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
-        if(micros_timer() - lastmove > 100){
-            fill_grid(own_grid,1);
-            lastmove = micros_timer();
-        }
+        update_grid();
         if(boat_placement(own_grid)){
             //currentGameState=STATE_SETUP_GAME;
         }
@@ -72,13 +63,13 @@ int main(void){
         grid_init();
         initCells(opp_grid);
         
-        fill_grid(opp_grid, 1);
+        fill_grid(opp_grid);
         currentGameState=STATE_PLACE_BOATS;
         break;
 
     case STATE_YOUR_TURN:
 
-        fill_grid(opp_grid, 0);
+        fill_grid(opp_grid);
         break;
 
     case STATE_OPPONENT_TURN:
@@ -106,6 +97,12 @@ int main(void){
 
         // }
     decode_ir();
-    await_ack();   
+
     }
-}
+
+        // handle_place_boat(selected_cell);
+        // update_grid();
+        // handle_ack(selected_cell);
+        // handle_ir_frame(selected_cell);
+    }
+

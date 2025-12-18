@@ -1,18 +1,21 @@
-#ifndef IRRECEIVER_H
-#define IRRECEIVER_H
+#ifndef IR_RECEIVER_H
+#define IR_RECEIVER_H
 
 #include <stdint.h>
-#include <stdbool.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define HALFBIT_US 889
+#define IR_PIN PD2
+#define BUFFER_SIZE 64
 
-//init IR receiver
+typedef struct {
+    uint16_t delta;
+    uint8_t state; // 0 = LOW, 1 = HIGH
+} delta_entry_t;
+
+// Initialize hardware and buffers for IR reception
 void init_ir_receiver(void);
-int buffer_get(uint16_t *delta, uint8_t *state);
 
-#ifdef __cplusplus
-}
+// Retrieve a delta from the buffer
+int buffer_get(uint16_t *val, uint8_t *state);
+
 #endif
-#endif 

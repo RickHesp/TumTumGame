@@ -1,9 +1,8 @@
+
 #include "nunchuckdraw.h"
 #include "nunchuck.h"
 #include "micros_timer.h"
 #include "display.h"
-
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,12 +41,10 @@ uint8_t move_joysticks(NunchuckJoystick_t joy) {
     //difference in x,y
     int dx = 0;
     int dy = 0;
-
     
     //define movements with a small margin with no response to joystick movement
     if(abs(joy.x - CENTER_X) < MARGIN && abs(joy.y - CENTER_Y) < MARGIN){
         return start_index; //no movement
-
     }
     //give priority to larger movement(as to not move diagonally)
     if(abs(joy.x - CENTER_X) >= abs(joy.y - CENTER_Y)){
@@ -179,7 +176,6 @@ bool nunchuck_z_button(){
     }
     return false;
 }
-
 #ifdef __cplusplus
 }
 #endif

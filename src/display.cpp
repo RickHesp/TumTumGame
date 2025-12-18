@@ -4,6 +4,7 @@
 
 #include "grid.h"
 #include "display.h"
+#include "micros_timer.h"
 
 #define TFT_CS   10
 #define TFT_DC   9
@@ -19,6 +20,8 @@
 
 static uint8_t x=0;
 static uint8_t y=0;
+
+uint16_t lastmove = 0;
 
 Adafruit_ILI9341 tft(TFT_CS, TFT_DC, TFT_RST);
 
@@ -43,6 +46,14 @@ void grid_init(){
         tft.drawFastHLine(0, i, w, ILI9341_BLACK);
     }
 }
+
+void update_grid(){
+    if(micros_timer() - lastmove > 100){
+        fill_grid(own_grid);
+        lastmove = micros_timer();
+    }
+}
+
 
 void get_cell_location(uint8_t cell){
     //calculate row and column

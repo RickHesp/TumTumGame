@@ -1,22 +1,12 @@
-#ifndef SENDCOMMAND_H
-#define SENDCOMMAND_H
+#ifndef IR_SENDER_H
+#define IR_SENDER_H
 
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+// Initialize the IR sender hardware
+void init_ir_sender(void);
 
-void send_command(uint8_t toggle, uint8_t address, uint8_t command);
-void send_ack();
-void await_ack();
-void receive_acknowledgement();
-void init_ir_sender();
+// Send an RC5 command
+void send_command(uint8_t field, uint8_t address, uint8_t command);
 
-extern bool wait_ack;
-
-
-#ifdef __cplusplus
-}
-#endif
-#endif
+#endif 
