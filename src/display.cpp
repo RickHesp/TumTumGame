@@ -111,6 +111,7 @@ void draw_cross(uint8_t cell, uint16_t color)
     tft.drawLine(x+cell_pixel_width,y+1,x+1,y+cell_pixel_height,color);//shifted slightly
 }
 
+
 void fill_grid(gridCell *grid){
     for(uint8_t i=0; i<36; i++){
         if(grid[i].boat==1){

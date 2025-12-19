@@ -9,9 +9,11 @@
 extern "C" {
 #endif
 
-uint16_t move_joysticks(NunchuckJoystick_t joy);
-uint16_t joystick_select();
-bool nunchuck_place_boat();
+uint8_t move_joysticks(NunchuckJoystick_t joy);
+uint8_t joystick_select();
+uint8_t* joystick_select_boat(uint8_t boat_direction);
+uint8_t nunchuck_c_button();
+bool nunchuck_z_button();
 
 #ifdef __cplusplus
 }

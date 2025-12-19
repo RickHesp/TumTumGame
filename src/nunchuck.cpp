@@ -63,7 +63,7 @@ NunchuckJoystick_t nunchuck_readJoystick() {
 void read_buttons(bool *cButton, bool *zButton) {
     uint8_t buf[6];
     nunchuck_read(buf);
-
+    
     // get button states
     *zButton = !(buf[5] & 0x01);  // bit 0
     *cButton = !((buf[5] >> 1) & 0x01); //bit 1
