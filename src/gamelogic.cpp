@@ -9,6 +9,7 @@
 bool await_ack = false;
 uint32_t await_time = 0;
 uint8_t attempt_counter = 0;
+uint16_t pending_cell = 0;
 
 void handle_place_boat(uint16_t selected_cell) {
     if (nunchuck_z_button() && !await_ack) {
@@ -21,7 +22,8 @@ void handle_place_boat(uint16_t selected_cell) {
 
 void handle_ack(uint16_t selected_cell) {
     if (await_ack && (micros_timer() - await_time > ACK_TIMEOUT)) {
-        send_command(1, CMD_RETRY, selected_cell);
+        send_command(1, CMD_RETRY, pending_cell);
+        await_time = micros_timer();
         attempt_counter++;
         if (attempt_counter > MAX_ATTEMPTS) await_ack = false;
     }
@@ -31,7 +33,7 @@ void handle_ir_frame(uint16_t selected_cell) {
     rc5_frame_t frame = decode_ir();
     if (!frame.valid) return;
 
-    if (frame.address == ADDR_ACK && frame.command == selected_cell) {
+    if (frame.address == ADDR_ACK && await_ack && frame.command == pending_cell) {
         hitCell(frame.command);
         await_ack = false;
     } else if (frame.address != ADDR_ACK) {
