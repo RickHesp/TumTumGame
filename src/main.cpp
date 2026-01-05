@@ -15,6 +15,17 @@
 #include "micros_timer.h"
 #include "gamelogic.h"
 
+enum GameState {
+    STATE_START,
+    STATE_PLACE_BOATS,
+    STATE_SETUP_GAME,
+    STATE_YOUR_TURN,
+    STATE_OPPONENT_TURN,
+    STATE_GAME_OVER
+};
+
+GameState currentGameState = STATE_START;
+
 int main(void){
     init();//from arduino.h
     brightness_init();
@@ -26,11 +37,72 @@ int main(void){
     USART_Init();    
     sei();
     while(1){
-        uint16_t selected_cell = joystick_select();
+    switch (currentGameState)
+    {
+    case STATE_START:
+        currentGameState=STATE_PLACE_BOATS;
 
-        handle_place_boat(selected_cell);
+        //plaats hier een bool voor de startknop
+        if(true){
+            grid_init();
+            initCells(own_grid);
+            currentGameState=STATE_PLACE_BOATS;
+        }
+        break;
+
+    case STATE_PLACE_BOATS:
+        // Code to handle boat placement
         update_grid();
-        handle_ack(selected_cell);
-        handle_ir_frame(selected_cell);
+        if(boat_placement(own_grid)){
+            //currentGameState=STATE_SETUP_GAME;
+        }
+        break;
+
+    case STATE_SETUP_GAME:
+        // Code to handle game setup
+        grid_init();
+        initCells(opp_grid);
+        
+        fill_grid(opp_grid);
+        currentGameState=STATE_PLACE_BOATS;
+        break;
+
+    case STATE_YOUR_TURN:
+
+        fill_grid(opp_grid);
+        break;
+
+    case STATE_OPPONENT_TURN:
+        //Code to handle opponent's turn
+        break;
+
+    case STATE_GAME_OVER:
+        //Code to handle game over
+        break;
+
+    default:
+        break;
     }
-}
+
+
+
+        // uint8_t selected_cell = joystick_select();
+        // if(nunchuck_z_button()){
+        //     USART_Print("Z");
+        //     send_command(1, 1, selected_cell);
+        // }
+        // if(micros_timer() - lastmove > 100){
+        //     fill_grid(own_grid);
+        //     lastmove = micros_timer();
+
+        // }
+    decode_ir();
+
+    }
+
+        // handle_place_boat(selected_cell);
+        // update_grid();
+        // handle_ack(selected_cell);
+        // handle_ir_frame(selected_cell);
+    }
+
