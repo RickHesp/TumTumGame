@@ -62,3 +62,13 @@ bool boat_placement(gridCell *grid){
     }
     return false;
 }
+void shoot_salvo(gridCell *grid){
+    uint8_t cell_index = joystick_select();
+    if(nunchuck_z_button()){
+        if(!grid[cell_index].hit){
+            send_command(1, cell_index, 0); //send shoot command/////////////////////////////////
+            grid[cell_index].hit = 1;
+        } 
+    }
+
+}
