@@ -45,14 +45,13 @@ void grid_init(){
 
     //start drawing (6x6 field)
     tft.fillRect(0, 0, 320, 240, ILI9341_NAVY);
-    drawRadarGrid();
-    // for (int i = 0; i <= w; i+=vertical_val) {//make vertical lines all h/6 apart
-    //     tft.drawFastVLine(i, 0, h, ILI9341_BLACK);
-    // }
+    for (int i = 0; i <= w; i+=vertical_val) {//make vertical lines all h/6 apart
+        tft.drawFastVLine(i, 0, h, ILI9341_BLACK);
+    }
     
-    // for(int i = 0; i <= h; i+=horizontal_val){ //make horizontal lines all w/6 apart
-    //     tft.drawFastHLine(0, i, w, ILI9341_BLACK);
-    // }
+    for(int i = 0; i <= h; i+=horizontal_val){ //make horizontal lines all w/6 apart
+        tft.drawFastHLine(0, i, w, ILI9341_BLACK);
+    }
 }
 
 void update_grid(){
@@ -60,6 +59,7 @@ void update_grid(){
         fill_grid(own_grid);
         lastmove = micros_timer();
     }
+    // drawRadarGrid();
 }
 
 

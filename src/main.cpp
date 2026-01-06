@@ -29,6 +29,8 @@ enum GameState {
 };
 
 GameState currentGameState = STATE_START;
+bool startingPlayer = false; //true if this device starts first
+
 
 int main(void){
     init();//from arduino.h
@@ -39,6 +41,7 @@ int main(void){
     initCells(own_grid);
     Startscreen_init();
     USART_Init();    
+
     sei();
     uint8_t started = 0;
     uint8_t timer = 30;
@@ -50,16 +53,16 @@ int main(void){
     case STATE_START:
         if(screen_touched() && !started){
         started = 1;
+        startingPlayer = true;
         grid_init();
-
         currentGameState=STATE_PLACE_BOATS;
     }
         break;
 
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
+        
         update_grid();
-        drawRadarGrid();
         if(boat_placement(own_grid)){
             currentGameState=STATE_SETUP_GAME;
         }
@@ -67,20 +70,31 @@ int main(void){
 
     case STATE_SETUP_GAME:
         // Code to handle game setup
-        grid_init();
         initCells(opp_grid);
-        
+        timer_init(timer);
         fill_grid(opp_grid);
         currentGameState=STATE_YOUR_TURN;
         break;
 
     case STATE_YOUR_TURN:
+        drawYourTurn(1);
+
         uint16_t selected_cell = joystick_select();
 
         handle_place_boat(selected_cell);
         update_grid();
         handle_ack(selected_cell);
         handle_ir_frame(selected_cell);
+
+        
+        if(one_second_passed() && started && timer > 0){
+        timer--; // decrease timer once every second
+        timer_init(timer);
+
+        }if(timer == 0){
+            drawYourTurn(0);
+            currentGameState=STATE_OPPONENT_TURN;
+        }
         break;
 
     case STATE_OPPONENT_TURN:
@@ -90,7 +104,6 @@ int main(void){
     case STATE_GAME_OVER:
         //Code to handle game over
         break;
-
     default:
         break;
     }
