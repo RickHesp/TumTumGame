@@ -129,7 +129,7 @@ void fill_grid(gridCell *grid){
         }if(grid[i].selected==1){
             highlight_cell(i, ILI9341_BLACK);
         }if(grid[i].boat==0 && grid[i].hit==0 && grid[i].selected==0){
-            color_cell(i, ILI9341_BLUE);
+            color_cell(i, ILI9341_NAVY);
         }
     }
 }

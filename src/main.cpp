@@ -6,15 +6,13 @@
 #include <Arduino.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
-// #include "brightness.h"
-// #include "display.h"
-// #include "rc5decoder.h"
-// #include "nunchuck.h"
-// #include "nunchuckdraw.h"
-// #include "TWI.h"
-// #include "micros_timer.h"
-// #include "7segment.h"
-// #include "touch.h"
+#include "brightness.h"
+#include "display.h"
+#include "rc5decoder.h"
+#include "nunchuck.h"
+#include "nunchuckdraw.h"
+#include "TWI.h"
+#include "7segment.h"
 
 #include "touch.h"
 #include <Arduino.h>
@@ -38,27 +36,30 @@ int main(void){
     init_ir_sender();
     init_ir_receiver();
     nunchuck_init();
-    grid_init();
     initCells(own_grid);
+    Startscreen_init();
     USART_Init();    
     sei();
+    uint8_t started = 0;
+    uint8_t timer = 30;
+
     while(1){
+
     switch (currentGameState)
     {
     case STATE_START:
-        currentGameState=STATE_PLACE_BOATS;
+        if(screen_touched() && !started){
+        started = 1;
+        grid_init();
 
-        //plaats hier een bool voor de startknop
-        if(true){
-            grid_init();
-            initCells(own_grid);
-            currentGameState=STATE_PLACE_BOATS;
-        }
+        currentGameState=STATE_PLACE_BOATS;
+    }
         break;
 
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
         update_grid();
+        drawRadarGrid();
         if(boat_placement(own_grid)){
             currentGameState=STATE_SETUP_GAME;
         }
@@ -93,7 +94,6 @@ int main(void){
     default:
         break;
     }
-    // decode_ir();
     }
 }
 
