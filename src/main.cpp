@@ -39,55 +39,52 @@ int main(void){
     while(1){
     switch (currentGameState)
     {
-    case STATE_START:
-        currentGameState=STATE_PLACE_BOATS;
-
-        //plaats hier een bool voor de startknop
-        if(true){
-            grid_init();
-            initCells(own_grid);
+        case STATE_START:
             currentGameState=STATE_PLACE_BOATS;
+
+            //plaats hier een bool voor de startknop
+            if(true){
+                grid_init();
+                initCells(own_grid);
+                currentGameState=STATE_PLACE_BOATS;
+            }
+            break;
+
+        case STATE_PLACE_BOATS:
+            // Code to handle boat placement
+            update_grid();
+            if(boat_placement(own_grid)){
+                currentGameState=STATE_SETUP_GAME;
+            }
+            break;
+
+        case STATE_SETUP_GAME:
+            // Code to handle game setup
+            grid_init();
+            initCells(opp_grid);
+            
+            fill_grid(opp_grid);
+            currentGameState=STATE_YOUR_TURN;
+            break;
+
+        case STATE_YOUR_TURN:
+            shoot_salvo(opp_grid);
+            update_opp_grid();
+            handle_ack();
+            handle_ir_frame();
+            break;
+
+        case STATE_OPPONENT_TURN:
+            //Code to handle opponent's turn
+            break;
+
+        case STATE_GAME_OVER:
+            //Code to handle game over
+            break;
+
+        default:
+            break;
         }
-        break;
-
-    case STATE_PLACE_BOATS:
-        // Code to handle boat placement
-        update_grid();
-        if(boat_placement(own_grid)){
-            currentGameState=STATE_SETUP_GAME;
-        }
-        break;
-
-    case STATE_SETUP_GAME:
-        // Code to handle game setup
-        grid_init();
-        initCells(opp_grid);
-        
-        fill_grid(opp_grid);
-        currentGameState=STATE_YOUR_TURN;
-        break;
-
-    case STATE_YOUR_TURN:
-        uint16_t selected_cell = joystick_select();
-
-        handle_place_boat(selected_cell);
-        update_grid();
-        handle_ack(selected_cell);
-        handle_ir_frame(selected_cell);
-        break;
-
-    case STATE_OPPONENT_TURN:
-        //Code to handle opponent's turn
-        break;
-
-    case STATE_GAME_OVER:
-        //Code to handle game over
-        break;
-
-    default:
-        break;
-    }
-    // decode_ir();
     }
 }
 

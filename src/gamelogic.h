@@ -14,9 +14,8 @@ extern bool await_ack;
 extern uint32_t await_time;
 extern uint8_t attempt_counter;
 
-void handle_place_boat(uint16_t selected_cell);
-void handle_ack(uint16_t selected_cell);
-void handle_ir_frame(uint16_t selected_cell);
+void handle_ack();
+void handle_ir_frame();
 bool boat_placement(gridCell *grid);
 void shoot_salvo(gridCell *grid);
 #endif

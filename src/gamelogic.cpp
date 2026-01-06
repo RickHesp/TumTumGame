@@ -12,17 +12,7 @@ uint32_t await_time = 0;
 uint8_t attempt_counter = 0;
 uint16_t pending_cell = 0;
 
-void handle_place_boat(uint16_t selected_cell) {
-    if (nunchuck_z_button() && !await_ack) {
-        send_command(1, CMD_PLACE_BOAT, selected_cell);
-        await_ack = true;
-        await_time = micros_timer();
-        attempt_counter = 0;
-        pending_cell = selected_cell;
-    }
-}
-
-void handle_ack(uint16_t selected_cell) {
+void handle_ack() {
     if (await_ack && (micros_timer() - await_time > ACK_TIMEOUT)) {
         send_command(1, CMD_RETRY, pending_cell);
         await_time = micros_timer();
@@ -33,12 +23,12 @@ void handle_ack(uint16_t selected_cell) {
     }
 }
 
-void handle_ir_frame(uint16_t selected_cell) {
+void handle_ir_frame() {
     rc5_frame_t frame = decode_ir();
     if (!frame.valid) return;
 
     if (frame.address == ADDR_ACK && await_ack && frame.command == pending_cell) {
-        hitCell(frame.command);
+        oppHitCell(frame.command);
         await_ack = false;
     } else if (frame.address != ADDR_ACK) {
         send_command(1, ADDR_ACK, frame.command);
@@ -46,7 +36,7 @@ void handle_ir_frame(uint16_t selected_cell) {
     }
 }
 
-bool boat_placement(gridCell *grid){
+bool boat_placement(gridCell* grid){
     // Code to handle boat placement
     static uint8_t placed_boats = 0;
 
@@ -69,12 +59,12 @@ bool boat_placement(gridCell *grid){
     return false;
 }
 void shoot_salvo(gridCell *grid){
-    uint8_t cell_index = joystick_select();
-    if(nunchuck_z_button()){
-        if(!grid[cell_index].hit){
-            send_command(1, cell_index, 0); //send shoot command
-            grid[cell_index].hit = 1;
-        } 
+    uint8_t selected_cell = opp_joystick_select();
+    if (nunchuck_z_button() && !await_ack) {
+        send_command(1, CMD_PLACE_BOAT, selected_cell);
+        await_ack = true;
+        await_time = micros_timer();
+        attempt_counter = 0;
+        pending_cell = selected_cell;
     }
-
 }
