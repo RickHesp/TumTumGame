@@ -19,4 +19,16 @@ void Startscreen_init();
 
 //draw the grid from gridcell array
 void fill_grid(gridCell *grid);
+void drawSeaBackground();
+void drawRadarGrid();
+void drawBoat(uint8_t gridNumber);
+
+//endscreen
+void endscreen_init(bool won);
+
+//timer
+void timer_init(int timer);
+void drawYourTurn(int on_off);
+void lives(int lives);
+
 #endif

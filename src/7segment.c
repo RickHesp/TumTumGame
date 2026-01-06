@@ -27,7 +27,6 @@ void expander_write(uint8_t data, uint8_t expander) {
 
 int countDown_step(uint8_t expander, int digit) {
     expander_write(digit_map[digit], expander);
-    
     return digit;
 }
 

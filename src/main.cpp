@@ -1,25 +1,32 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdint.h>
-#include <usart.h>
-#include <Arduino.h>
-#include "sendcommand.h"
+// #include <avr/io.h>
+// #include <avr/interrupt.h>
+// #include <stdint.h>
+// #include <usart.h>
+// #include <Arduino.h>
+// #include "sendcommand.h"
 #include "irreceiver.h"
-#include "brightness.h"
-#include "display.h"
-#include "rc5decoder.h"
-#include "nunchuck.h"
-#include "nunchuckdraw.h"
-#include "TWI.h"
-#include "micros_timer.h"
-#include "7segment.h"
+// #include "brightness.h"
+// #include "display.h"
+// #include "rc5decoder.h"
+// #include "nunchuck.h"
+// #include "nunchuckdraw.h"
+// #include "TWI.h"
+// #include "micros_timer.h"
+// #include "7segment.h"
+// #include "touch.h"
+
 #include "touch.h"
+#include <Arduino.h>
+#include "micros_timer.h"
+#include "display.h"
 
 #define SEGMENT_ADDRESS 0x21
 #define EXPANDER_ADRESS 0x52
-uint16_t lastmove = 0;
+// uint16_t lastmove = 0;
 
 int main(void){
+    
+    micros_timer();
     // init();//from arduino.h
     // brightness_init();
     // init_ir_sender();
@@ -65,16 +72,32 @@ int main(void){
     //     }
     // decode_ir();
     // }
-    bool screenTouched = 0;
     init();
+    timer1_init();
+    sei();
+    
     Serial.begin(9600);
-    Serial.println("Touchscreen Test");
-    Startscreen_init();   
+    Startscreen_init();  
+    int timer = 30; 
+    bool started = false;
     while(1){
-        screenTouched = screen_touched();
-        Serial.println(printtouchValues());
-        if(screenTouched){
+        if(screen_touched() && !started){ //wait for screen touch to start game
+            started = true;
             grid_init();
+            timer_init(timer);
+            drawBoat(10); //test draw boat at grid 10
+            drawYourTurn(1);
+            Serial.println("Game Started");
         }
+        if(one_second_passed() && started && timer > 0){
+                timer--; // decrease timer once every second
+                timer_init(timer);
+                Serial.println(timer);
+                Serial.println("tick");
+        }if(timer == 0){
+            Serial.print("other players turn");
+            drawYourTurn(0);
+        }
+
     }
 }

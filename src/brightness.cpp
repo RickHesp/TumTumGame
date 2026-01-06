@@ -10,7 +10,6 @@ volatile uint8_t backlight_threshold = 255; // 0-255 brightness
 
 void init_backlight() {
     DDRD |= (1 << BACKLIGHT); // PD5
-    
     TIMSK0 |= (1<<OCIE0A);
 }
 

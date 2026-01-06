@@ -34,14 +34,15 @@ void grid_init(){
     int vertical_val = h/GRID_HEIGHT;
 
     //start drawing (6x6 field)
-    tft.fillScreen(ILI9341_BLUE);
-    for (int i = 0; i <= w; i+=vertical_val) {//make vertical lines all h/6 apart
-        tft.drawFastVLine(i, 0, h, ILI9341_BLACK);
-    }
+    tft.fillRect(0, 0, 320, 240, ILI9341_NAVY);
+    drawRadarGrid();
+    // for (int i = 0; i <= w; i+=vertical_val) {//make vertical lines all h/6 apart
+    //     tft.drawFastVLine(i, 0, h, ILI9341_BLACK);
+    // }
     
-    for(int i = 0; i <= h; i+=horizontal_val){ //make horizontal lines all w/6 apart
-        tft.drawFastHLine(0, i, w, ILI9341_BLACK);
-    }
+    // for(int i = 0; i <= h; i+=horizontal_val){ //make horizontal lines all w/6 apart
+    //     tft.drawFastHLine(0, i, w, ILI9341_BLACK);
+    // }
 }
 
 void get_cell_location(uint8_t cell){
@@ -132,4 +133,123 @@ void Startscreen_init(){
     tft.setTextSize(3);
     tft.setTextColor(ILI9341_BLACK);
     tft.print("Battleship");
+}
+
+void endscreen_init(bool won){
+    tft.begin();
+    tft.setRotation(1); //320x240
+    tft.fillScreen(ILI9341_BLUE);
+    tft.setCursor(100, 100);
+    tft.setTextSize(3);
+    tft.setTextColor(ILI9341_BLACK);
+    if(won){
+        tft.print("You Won!");
+    }else{
+        tft.print("You Lost!");
+    }
+}
+
+void timer_init(int timer){
+    tft.fillRect(265, 10, 50, 30, ILI9341_NAVY);
+    //red if lower then 10 seconds left
+    if(timer <= 10){
+        tft.setTextColor(ILI9341_RED, ILI9341_NAVY);
+    }else{
+        tft.setTextColor(ILI9341_GREEN, ILI9341_NAVY);
+    }
+    tft.setCursor(265, 10);
+    tft.setTextSize(3);
+    tft.print(timer);
+
+}
+
+void drawYourTurn(int on_off){
+    if(on_off){
+        tft.setCursor(265, 50);
+        tft.setTextSize(5);
+        tft.setTextColor(ILI9341_GREEN, ILI9341_NAVY);
+        tft.print("*");
+        return;
+    }else{
+        return;
+    }
+
+}
+
+void drawRadarGrid() {
+  uint16_t gridColor = ILI9341_GREEN;
+  uint16_t faintGrid = tft.color565(0, 80, 0);
+
+  tft.drawRect(0, 0, 240, 240, gridColor);
+
+  for (int i = 1; i < 6; i++) {
+    int p = i * 40;
+
+    tft.drawFastVLine(p, 0, 240, faintGrid);
+    tft.drawFastHLine(0, p, 240, faintGrid);
+  }
+
+  // Center crosshair (thicker)
+  tft.drawFastVLine(120, 0, 240, gridColor);
+  tft.drawFastVLine(121, 0, 240, gridColor);
+  tft.drawFastHLine(0, 120, 240, gridColor);
+  tft.drawFastHLine(0, 121, 240, gridColor);
+
+  // Radar circles
+  for (int r = 40; r <= 120; r += 40) {
+    tft.drawCircle(120, 120, r, faintGrid);
+  }
+
+  // Corner ticks
+  for (int i = 0; i < 240; i += 8) {
+    tft.drawPixel(i, 0, gridColor);
+    tft.drawPixel(0, i, gridColor);
+    tft.drawPixel(i, 239, gridColor);
+    tft.drawPixel(239, i, gridColor);
+  }
+}
+
+
+void drawBoat(uint8_t gridNumber)
+{
+    uint8_t cell = gridNumber - 1;
+    get_cell_location(cell);
+
+    uint16_t shipColor = ILI9341_DARKGREY;
+
+    int cx = x + cell_pixel_width / 2;
+
+    tft.fillRect(
+        cx - 8,
+        y + 8,
+        16,
+        cell_pixel_height - 10,
+        shipColor
+    );
+
+    tft.fillTriangle(
+        cx - 8, y + 8,
+        cx + 8, y + 8,
+        cx,     y + 2,
+        shipColor
+    );
+
+    tft.fillRect(
+        cx - 10,
+        y + cell_pixel_height - 10,
+        20,
+        6,
+        shipColor
+    );
+
+    tft.fillCircle(cx, 
+        y + cell_pixel_height - 17,
+        3, 
+        ILI9341_BLACK);
+    
+    
+    tft.fillCircle(cx, 
+        y + cell_pixel_height - 27,
+        3, 
+        ILI9341_BLACK);
 }

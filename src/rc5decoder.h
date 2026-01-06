@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <usart.h>
 #include <stdio.h>
+#include "grid.h"
 
     char halfbits[32];
     uint8_t halfcount = 0;
