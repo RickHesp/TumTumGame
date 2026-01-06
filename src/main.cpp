@@ -54,7 +54,7 @@ int main(void){
         // Code to handle boat placement
         update_grid();
         if(boat_placement(own_grid)){
-            //currentGameState=STATE_SETUP_GAME;
+            currentGameState=STATE_SETUP_GAME;
         }
         break;
 
@@ -64,12 +64,16 @@ int main(void){
         initCells(opp_grid);
         
         fill_grid(opp_grid);
-        currentGameState=STATE_PLACE_BOATS;
+        currentGameState=STATE_YOUR_TURN;
         break;
 
     case STATE_YOUR_TURN:
+        uint16_t selected_cell = joystick_select();
 
-        fill_grid(opp_grid);
+        handle_place_boat(selected_cell);
+        update_grid();
+        handle_ack(selected_cell);
+        handle_ir_frame(selected_cell);
         break;
 
     case STATE_OPPONENT_TURN:
@@ -83,26 +87,7 @@ int main(void){
     default:
         break;
     }
-
-
-
-        // uint8_t selected_cell = joystick_select();
-        // if(nunchuck_z_button()){
-        //     USART_Print("Z");
-        //     send_command(1, 1, selected_cell);
-        // }
-        // if(micros_timer() - lastmove > 100){
-        //     fill_grid(own_grid);
-        //     lastmove = micros_timer();
-
-        // }
-    decode_ir();
-
+    // decode_ir();
     }
-
-        // handle_place_boat(selected_cell);
-        // update_grid();
-        // handle_ack(selected_cell);
-        // handle_ir_frame(selected_cell);
-    }
+}
 
