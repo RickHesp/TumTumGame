@@ -79,13 +79,15 @@ int main(void){
     Serial.begin(9600);
     Startscreen_init();  
     int timer = 30; 
-    bool started = false;
+    uint8_t started = 0;
     while(1){
         if(screen_touched() && !started){ //wait for screen touch to start game
-            started = true;
-            grid_init();
+            started = 1;
+            endscreen_init(false); //test endscreen
+        }
             timer_init(timer);
-            drawBoat(10); //test draw boat at grid 10
+            drawBoat(10, 1); //test draw boat at grid 10
+            drawBoat(22, 0); //test draw boat at grid 22
             drawYourTurn(1);
             Serial.println("Game Started");
         }
@@ -100,4 +102,3 @@ int main(void){
         }
 
     }
-}

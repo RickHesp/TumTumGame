@@ -10,6 +10,7 @@
 //initialize the grid display
 void grid_init();
 
+
 //draw commands
 void color_cell(uint8_t cell, uint16_t color);
 void highlight_cell(uint8_t cell, uint16_t color);
@@ -21,7 +22,9 @@ void Startscreen_init();
 void fill_grid(gridCell *grid);
 void drawSeaBackground();
 void drawRadarGrid();
-void drawBoat(uint8_t gridNumber);
+void drawBoat(uint8_t gridNumber, uint8_t orientation);
+void drawWarshipArt();
+
 
 //endscreen
 void endscreen_init(bool won);
