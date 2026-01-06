@@ -3,7 +3,9 @@
 
 #include <avr/io.h>
 
+
 //enable micros timer
 uint32_t micros_timer();
+uint8_t one_second_passed();
 
 #endif

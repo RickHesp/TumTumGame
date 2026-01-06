@@ -6,12 +6,18 @@
 #include <Arduino.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
-#include "brightness.h"
-#include "display.h"
-#include "rc5decoder.h"
-#include "nunchuck.h"
-#include "nunchuckdraw.h"
-#include "TWI.h"
+// #include "brightness.h"
+// #include "display.h"
+// #include "rc5decoder.h"
+// #include "nunchuck.h"
+// #include "nunchuckdraw.h"
+// #include "TWI.h"
+// #include "micros_timer.h"
+// #include "7segment.h"
+// #include "touch.h"
+
+#include "touch.h"
+#include <Arduino.h>
 #include "micros_timer.h"
 #include "gamelogic.h"
 
