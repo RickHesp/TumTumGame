@@ -34,4 +34,5 @@ void timer_init(int timer);
 void drawYourTurn(int on_off);
 void lives(int lives);
 
+void update_grid();
 #endif

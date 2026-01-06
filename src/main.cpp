@@ -1,9 +1,10 @@
-// #include <avr/io.h>
-// #include <avr/interrupt.h>
-// #include <stdint.h>
-// #include <usart.h>
-// #include <Arduino.h>
-// #include "sendcommand.h"
+
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdint.h>
+#include <usart.h>
+#include <Arduino.h>
+#include "sendcommand.h"
 #include "irreceiver.h"
 // #include "brightness.h"
 // #include "display.h"
@@ -18,87 +19,81 @@
 #include "touch.h"
 #include <Arduino.h>
 #include "micros_timer.h"
-#include "display.h"
+#include "gamelogic.h"
 
-#define SEGMENT_ADDRESS 0x21
-#define EXPANDER_ADRESS 0x52
-// uint16_t lastmove = 0;
+enum GameState {
+    STATE_START,
+    STATE_PLACE_BOATS,
+    STATE_SETUP_GAME,
+    STATE_YOUR_TURN,
+    STATE_OPPONENT_TURN,
+    STATE_GAME_OVER
+};
+
+GameState currentGameState = STATE_START;
 
 int main(void){
-    
-    micros_timer();
-    // init();//from arduino.h
-    // brightness_init();
-    // init_ir_sender();
-    // init_ir_receiver();
-    // nunchuck_init();
-    // grid_init();
-    // initCells(own_grid);
-    // TWI_init();
-
-    // USART_Init();
-    // USART_Print("IR sender/receiver ready\r\n");
-    
-    // uint8_t count = 10;
-    // uint8_t timer = 15;
-    // clear_display(SEGMENT_ADDRESS);
-
-    // sei();
-
-    // while(1){
-    //     if(one_second_passed()){
-    //         if(timer >= 10){
-    //             timer--;
-    //         }else if(timer < 10 && timer > 0){
-    //             countDown_step(SEGMENT_ADDRESS, count);
-    //             count--;
-    //             timer--;
-    //         }
-    //         else if (timer == 0){
-    //             countDown_step(SEGMENT_ADDRESS, 8);
-    //             timer = 15;
-    //             count = 10;
-    //         }
-    //     }
-    //     uint16_t selected_cell = joystick_select();
-    //     if(nunchuck_place_boat()){
-    //         USART_Print("Z");
-    //         send_command(1, 1, selected_cell);
-    //     }
-    //     if(micros_timer() - lastmove > 100){
-    //         fill_grid(own_grid);
-    //         lastmove = micros_timer();
-            
-    //     }
-    // decode_ir();
-    // }
-    init();
-    timer1_init();
+    init();//from arduino.h
+    brightness_init();
+    init_ir_sender();
+    init_ir_receiver();
+    nunchuck_init();
+    grid_init();
+    initCells(own_grid);
+    USART_Init();    
     sei();
-    
-    Serial.begin(9600);
-    Startscreen_init();  
-    int timer = 30; 
-    uint8_t started = 0;
     while(1){
-        if(screen_touched() && !started){ //wait for screen touch to start game
-            started = 1;
-            endscreen_init(false); //test endscreen
-        }
-            timer_init(timer);
-            drawBoat(10, 1); //test draw boat at grid 10
-            drawBoat(22, 0); //test draw boat at grid 22
-            drawYourTurn(1);
-            Serial.println("Game Started");
-        }
-        if(one_second_passed() && started && timer > 0){
-                timer--; // decrease timer once every second
-                timer_init(timer);
-                Serial.println(timer);
-                Serial.println("tick");
-        }if(timer == 0){
-            Serial.print("other players turn");
-            drawYourTurn(0);
-        }
+    switch (currentGameState)
+    {
+    case STATE_START:
+        currentGameState=STATE_PLACE_BOATS;
 
+        //plaats hier een bool voor de startknop
+        if(true){
+            grid_init();
+            initCells(own_grid);
+            currentGameState=STATE_PLACE_BOATS;
+        }
+        break;
+
+    case STATE_PLACE_BOATS:
+        // Code to handle boat placement
+        update_grid();
+        if(boat_placement(own_grid)){
+            currentGameState=STATE_SETUP_GAME;
+        }
+        break;
+
+    case STATE_SETUP_GAME:
+        // Code to handle game setup
+        grid_init();
+        initCells(opp_grid);
+        
+        fill_grid(opp_grid);
+        currentGameState=STATE_YOUR_TURN;
+        break;
+
+    case STATE_YOUR_TURN:
+        uint16_t selected_cell = joystick_select();
+
+        handle_place_boat(selected_cell);
+        update_grid();
+        handle_ack(selected_cell);
+        handle_ir_frame(selected_cell);
+        break;
+
+    case STATE_OPPONENT_TURN:
+        //Code to handle opponent's turn
+        break;
+
+    case STATE_GAME_OVER:
+        //Code to handle game over
+        break;
+
+    default:
+        break;
     }
+    // decode_ir();
+    }
+}
+

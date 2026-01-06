@@ -59,3 +59,15 @@ void USART_Print(const char *s) {
         USART_Transmit(*s++);
     }
 }
+
+void USART_Print_U16(uint16_t value) {
+    char buf[6];
+    itoa(value, buf, 10);
+    USART_Print(buf);
+}
+
+void USART_Print_U8(uint8_t value) {
+    char buf[4];
+    itoa(value, buf, 10);
+    USART_Print(buf);
+}
