@@ -17,6 +17,7 @@ void highlight_cell(uint8_t cell, uint16_t color);
 void draw_cross(uint8_t cell, uint16_t color);
 void drawButton();
 void Startscreen_init();
+void dropBomb(uint8_t gridNumber);
 
 //draw the grid from gridcell array
 void fill_grid(gridCell *grid);
@@ -28,6 +29,7 @@ void drawWarshipArt();
 
 //endscreen
 void endscreen_init(bool won);
+void Startscreen_init();
 
 //timer
 void timer_init(int timer);

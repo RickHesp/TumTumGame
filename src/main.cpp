@@ -24,7 +24,7 @@ GameState currentGameState = STATE_START;
 
 int main(void){
     init();//from arduino.h
-    brightness_init();
+    // brightness_init();
     init_ir_sender();
     init_ir_receiver();
     nunchuck_init();
@@ -111,5 +111,6 @@ int main(void){
         break;
     }
     }
-}
+    }
+
 

@@ -250,3 +250,4 @@ dkms.conf
 .pio/libdeps/uno/Adafruit TSC2007/license.txt
 .pio/libdeps/uno/Adafruit TSC2007/README.md
 .pio/libdeps/uno/integrity.dat
+.pio/build/uno/.sconsign311.dblite
