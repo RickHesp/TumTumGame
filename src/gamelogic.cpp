@@ -33,7 +33,16 @@ void handle_ir_frame() {
     } else if (frame.address != ADDR_ACK) {
         send_command(1, ADDR_ACK, frame.command);
         placeBoat(frame.command);
+        if(frame.address == 1)
+        currentGameState=STATE_YOUR_TURN;
     }
+}
+
+bool ir_start_command_received(){
+    rc5_frame_t frame = decode_ir();
+    if (!frame.valid) return false;
+    if(frame.address == 2) return true;
+    return false;
 }
 
 bool boat_placement(gridCell* grid){
@@ -66,5 +75,6 @@ void shoot_salvo(gridCell *grid){
         await_time = micros_timer();
         attempt_counter = 0;
         pending_cell = selected_cell;
+        currentGameState=STATE_OPPONENT_TURN;
     }
 }
