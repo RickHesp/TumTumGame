@@ -331,3 +331,98 @@ void drawWarshipArt() {
     // Railings or texture lines on hull
     tft.drawFastHLine(80, 125, 180, C_DECK);
 }
+
+
+void endscreen_init(bool won) {
+    tft.setRotation(1);
+    
+    if (won) {
+        // --- VICTORY SCREEN ---
+        tft.fillScreen(ILI9341_NAVY);
+        
+        // Draw some "celebration" rays
+        for(int i=0; i<320; i+=20) {
+            tft.drawLine(160, 120, i, 0, ILI9341_YELLOW);
+            tft.drawLine(160, 120, i, 240, ILI9341_YELLOW);
+        }
+
+        // Draw a central "Medal" circle
+        tft.fillCircle(160, 110, 50, 0xFD20); // Gold
+        tft.drawCircle(160, 110, 52, ILI9341_WHITE);
+        
+        // 3D Shadow Text
+        tft.setTextSize(4);
+        tft.setTextColor(ILI9341_BLACK);
+        tft.setCursor(63, 173);
+        tft.print("VICTORY!"); 
+        
+        tft.setTextColor(ILI9341_WHITE);
+        tft.setCursor(60, 170);
+        tft.print("VICTORY!");
+        
+        tft.setTextSize(2);
+        tft.setCursor(75, 210);
+        tft.print("The ocean is safe.");
+
+    } else {
+        // --- DEFEAT SCREEN ---
+        // Dark gradient floor (simulating deep water)
+        tft.fillScreen(ILI9341_BLACK);
+        tft.fillRect(0, 120, 320, 120, 0x0008); // Dark grey/blue
+        
+        // Draw a "sinking" ship silhouette
+        tft.fillTriangle(100, 140, 220, 140, 140, 100, 0x4208); // Sinking hull
+        
+        // Red glow from top
+        for(int i=0; i<5; i++) {
+            tft.drawRect(i, i, 320-(i*2), 240-(i*2), ILI9341_MAROON);
+        }
+
+        // 3D Shadow Text
+        tft.setTextSize(4);
+        tft.setTextColor(ILI9341_BLACK);
+        tft.setCursor(53, 63);
+        tft.print("DEFEATED");
+        
+        tft.setTextColor(ILI9341_RED);
+        tft.setCursor(50, 60);
+        tft.print("DEFEATED");
+
+        tft.setTextSize(2);
+        tft.setTextColor(ILI9341_LIGHTGREY);
+        tft.setCursor(70, 200);
+        tft.print("Your fleet has sunk...");
+    }
+}
+
+void dropBomb(uint8_t gridNumber) {
+    //Get Target coordinates
+    get_cell_location(gridNumber); 
+    int cx = x + (cell_pixel_width / 2);
+    int cy = y + (cell_pixel_height / 2);
+
+    tft.fillCircle(cx, cy, 10, ILI9341_WHITE);
+    
+    // 3. EXPLOSION EFFECT
+    int maxRadius = (cell_pixel_width / 2) - 2;
+
+    for (int r = 2; r <= maxRadius; r += 3) {
+        // Inner "Core" of explosion
+        tft.fillCircle(cx, cy, r, ILI9341_YELLOW);
+        
+        // Outer "Ring"
+        tft.drawCircle(cx, cy, r + 1, ILI9341_ORANGE);
+        tft.drawCircle(cx, cy, r + 2, ILI9341_RED);
+        
+       micros_ms_timer_delay(50000); // Short delay for animation effect
+    }
+
+    micros_ms_timer_delay(50000);
+    color_cell(gridNumber, ILI9341_NAVY); // Reset cell background
+    // color_cell(gridNumber + 6, ILI9341_NAVY); 
+    // color_cell(gridNumber - 6, ILI9341_NAVY);
+    // color_cell(gridNumber + 1, ILI9341_NAVY);
+    // color_cell(gridNumber - 1, ILI9341_NAVY);
+    drawRadarGrid(); 
+}
+
