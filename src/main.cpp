@@ -15,7 +15,6 @@
 #include "micros_timer.h"
 #include "7segment.h"
 #include "touch.h"
-
 #include "touch.h"
 #include <Arduino.h>
 #include "micros_timer.h"
@@ -34,7 +33,7 @@ GameState currentGameState = STATE_START;
 
 int main(void){
     init();//from arduino.h
-    brightness_init();
+    // brightness_init();
     init_ir_sender();
     init_ir_receiver();
     nunchuck_init();
@@ -52,15 +51,21 @@ int main(void){
         Startscreen_init();
         while(!started){
             if(screen_touched() && !started){
-                started = 1;
                 grid_init();
+                delay(50);
+                dropBomb(3);
+                _delay_ms(3000);
+                dropBomb(10);
+                _delay_ms(3000);
+                started = 1;
             }
         }
 
         
         currentGameState=STATE_PLACE_BOATS;
+        return;
     }
-        break;
+        
 
     case STATE_PLACE_BOATS:
         // Code to handle boat placement

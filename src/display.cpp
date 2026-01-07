@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_ILI9341.h>
-
 #include "grid.h"
 #include "display.h"
 #include "micros_timer.h"
@@ -219,6 +218,37 @@ void endscreen_init(bool won) {
         tft.setCursor(70, 200);
         tft.print("Your fleet has sunk...");
     }
+}
+
+void dropBomb(uint8_t gridNumber) {
+    //Get Target coordinates
+    get_cell_location(gridNumber); 
+    int cx = x + (cell_pixel_width / 2);
+    int cy = y + (cell_pixel_height / 2);
+
+    tft.fillCircle(cx, cy, 10, ILI9341_WHITE);
+    
+    // 3. EXPLOSION EFFECT
+    int maxRadius = (cell_pixel_width / 2) - 2;
+
+    for (int r = 2; r <= maxRadius; r += 3) {
+        // Inner "Core" of explosion
+        tft.fillCircle(cx, cy, r, ILI9341_YELLOW);
+        
+        // Outer "Ring"
+        tft.drawCircle(cx, cy, r + 1, ILI9341_ORANGE);
+        tft.drawCircle(cx, cy, r + 2, ILI9341_RED);
+        
+       micros_ms_timer_delay(50000); // Short delay for animation effect
+    }
+
+    micros_ms_timer_delay(50000);
+    color_cell(gridNumber, ILI9341_NAVY); // Reset cell background
+    // color_cell(gridNumber + 6, ILI9341_NAVY); 
+    // color_cell(gridNumber - 6, ILI9341_NAVY);
+    // color_cell(gridNumber + 1, ILI9341_NAVY);
+    // color_cell(gridNumber - 1, ILI9341_NAVY);
+    drawRadarGrid(); 
 }
 
 

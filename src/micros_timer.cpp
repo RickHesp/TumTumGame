@@ -12,6 +12,14 @@ uint32_t micros_timer(void){
   return ticks /2;//0.5 uS per tick
 }
 
+uint8_t micros_ms_timer_delay(uint32_t delay_us){
+  uint32_t start = micros_timer();
+  while((micros_timer() - start) < delay_us){
+    //wait
+  }
+  return 1;
+}
+
 uint8_t one_second_passed(){
   if(t1_overflows >= 31){
     t1_overflows = 0;
