@@ -79,12 +79,10 @@ int main(void){
     case STATE_YOUR_TURN:
         drawYourTurn(1);
 
-        uint16_t selected_cell = joystick_select();
-
-            shoot_salvo(opp_grid);
-            update_opp_grid();
-            handle_ack();
-            handle_ir_frame();
+        shoot_salvo(opp_grid);
+        update_opp_grid();
+        handle_ack();
+        handle_ir_frame();
 
         
         if(one_second_passed() && started && timer > 0){
@@ -93,7 +91,7 @@ int main(void){
 
         }if(timer == 0){
             drawYourTurn(0);
-            currentGameState=STATE_OPPONENT_TURN;
+            // currentGameState=STATE_OPPONENT_TURN;
         }
         break;
 
