@@ -122,26 +122,14 @@ void draw_cross(uint8_t cell, uint16_t color)
 
 void fill_grid(gridCell *grid){
     for(uint8_t i=0; i<36; i++){
-        if(grid[i].boat==1){
-            color_cell(i, ILI9341_GREEN);
-        }if(grid[i].hit==1){
+        if(grid[i].hit==1){
             draw_cross(i, ILI9341_RED);
         }if(grid[i].selected==1){
             highlight_cell(i, ILI9341_BLACK);
         }if(grid[i].boat==0 && grid[i].hit==0 && grid[i].selected==0){
-            color_cell(i, ILI9341_BLUE);
+            color_cell(i, ILI9341_NAVY);
         }
     }
-}
-
-void drawButton(){
-    tft.begin();
-    tft.setRotation(1); //320x240
-    tft.fillRoundRect(250, 50, 60, 40, 10, ILI9341_WHITE);
-    tft.setCursor(260, 60);
-    tft.setTextColor(ILI9341_BLACK);
-    tft.setTextSize(2);
-    tft.print("Start");
 }
 
 void Startscreen_init(){
@@ -170,6 +158,69 @@ void Startscreen_init(){
     tft.setTextColor(ILI9341_YELLOW); 
     tft.print("TAP TO START");
 }
+
+void endscreen_init(bool won) {
+    tft.setRotation(1);
+    
+    if (won) {
+        // --- VICTORY SCREEN ---
+        tft.fillScreen(ILI9341_NAVY);
+        
+        // Draw some "celebration" rays
+        for(int i=0; i<320; i+=20) {
+            tft.drawLine(160, 120, i, 0, ILI9341_YELLOW);
+            tft.drawLine(160, 120, i, 240, ILI9341_YELLOW);
+        }
+
+        // Draw a central "Medal" circle
+        tft.fillCircle(160, 110, 50, 0xFD20); // Gold
+        tft.drawCircle(160, 110, 52, ILI9341_WHITE);
+        
+        // 3D Shadow Text
+        tft.setTextSize(4);
+        tft.setTextColor(ILI9341_BLACK);
+        tft.setCursor(63, 173);
+        tft.print("VICTORY!"); 
+        
+        tft.setTextColor(ILI9341_WHITE);
+        tft.setCursor(60, 170);
+        tft.print("VICTORY!");
+        
+        tft.setTextSize(2);
+        tft.setCursor(75, 210);
+        tft.print("The ocean is safe.");
+
+    } else {
+        // --- DEFEAT SCREEN ---
+        // Dark gradient floor (simulating deep water)
+        tft.fillScreen(ILI9341_BLACK);
+        tft.fillRect(0, 120, 320, 120, 0x0008); // Dark grey/blue
+        
+        // Draw a "sinking" ship silhouette
+        tft.fillTriangle(100, 140, 220, 140, 140, 100, 0x4208); // Sinking hull
+        
+        // Red glow from top
+        for(int i=0; i<5; i++) {
+            tft.drawRect(i, i, 320-(i*2), 240-(i*2), ILI9341_MAROON);
+        }
+
+        // 3D Shadow Text
+        tft.setTextSize(4);
+        tft.setTextColor(ILI9341_BLACK);
+        tft.setCursor(53, 63);
+        tft.print("DEFEATED");
+        
+        tft.setTextColor(ILI9341_RED);
+        tft.setCursor(50, 60);
+        tft.print("DEFEATED");
+
+        tft.setTextSize(2);
+        tft.setTextColor(ILI9341_LIGHTGREY);
+        tft.setCursor(70, 200);
+        tft.print("Your fleet has sunk...");
+    }
+}
+
 
 void timer_init(int timer){
     tft.fillRect(265, 10, 50, 30, ILI9341_NAVY);

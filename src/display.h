@@ -28,6 +28,7 @@ void drawWarshipArt();
 
 //endscreen
 void endscreen_init(bool won);
+void Startscreen_init();
 
 //timer
 void timer_init(int timer);
