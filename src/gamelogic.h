@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include "grid.h"
 
-#define CMD_PLACE_BOAT 1
 #define CMD_RETRY 2
+#define ADDR_SHOOT 1
 #define ADDR_ACK 21
 #define ACK_TIMEOUT 500000UL
 #define MAX_ATTEMPTS 20

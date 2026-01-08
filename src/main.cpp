@@ -92,13 +92,14 @@ int main(void){
             }
 
             if(timer == 0){
-                timer = 30;
                 currentGameState=STATE_OPPONENT_TURN;
             }   
 
         break;
 
     case STATE_OPPONENT_TURN:
+        timer = 30; // reset own timer, won't go down until it is your own turn
+
         //Code to handle opponent's turn
         drawYourTurn(0);
         update_grid();
