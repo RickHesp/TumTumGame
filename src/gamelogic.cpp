@@ -8,6 +8,7 @@
 #include <usart.h>
 
 bool await_ack = false;
+bool await_ack_switch = false;
 uint32_t await_time = 0;
 uint8_t attempt_counter = 0;
 uint16_t pending_cell = 0;
@@ -19,6 +20,19 @@ void handle_ack() {
         attempt_counter++;
         if (attempt_counter > MAX_ATTEMPTS){
             await_ack = false;
+            // show error: no connection
+        }
+    }
+}
+
+void handle_ack_switch(){
+    if(await_ack_switch && (micros_timer() - await_time > ACK_TIMEOUT)){
+        send_command(1, ADDR_SWITCH_PLAYER, 1);
+        await_time = micros_timer();
+        attempt_counter++;
+        if(attempt_counter > MAX_ATTEMPTS){
+            await_ack_switch = false;
+            // show error: no connection
         }
     }
 }
@@ -35,7 +49,13 @@ void handle_ir_frame() {
         send_command(1, ADDR_ACK, frame.command);
         hitCell(frame.command);
         currentGameState=STATE_YOUR_TURN;
+    } else if (frame.address == ADDR_SWITCH_PLAYER){
+        send_command(1, ADDR_ACK_SWITCH, 1);
+        currentGameState=STATE_YOUR_TURN;
+    } else if (frame.address == ADDR_ACK_SWITCH){
+        currentGameState=STATE_OPPONENT_TURN;
     }
+    
 }
 
 bool ir_start_command_received(){

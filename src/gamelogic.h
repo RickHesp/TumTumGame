@@ -4,9 +4,11 @@
 #include <stdint.h>
 #include "grid.h"
 
-#define CMD_RETRY 2
 #define ADDR_SHOOT 1
+#define ADDR_START 2
+#define ADDR_SWITCH_PLAYER 3
 #define ADDR_ACK 21
+#define ADDR_ACK_SWITCH 22
 #define ACK_TIMEOUT 500000UL
 #define MAX_ATTEMPTS 20
 
@@ -20,11 +22,13 @@ enum GameState {
 };
 
 extern bool await_ack;
+extern bool await_ack_switch;
 extern uint32_t await_time;
 extern uint8_t attempt_counter;
 extern GameState currentGameState;
 
 void handle_ack();
+void handle_ack_switch();
 void handle_ir_frame();
 bool ir_start_command_received();
 bool boat_placement(gridCell *grid);

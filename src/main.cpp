@@ -51,7 +51,7 @@ int main(void){
         if(screen_touched() && !started){
         started = 1;
         startingPlayer = true;
-        send_command(1, 2, 12);
+        send_command(1, ADDR_START, 12);
         grid_init();
         currentGameState=STATE_PLACE_BOATS;
     }
@@ -60,7 +60,7 @@ int main(void){
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
         update_grid();
-        send_command(1, 2, 1);
+        send_command(1, ADDR_START, 1);
         if(boat_placement(own_grid)){
             currentGameState=STATE_SETUP_GAME;
         }
@@ -92,7 +92,11 @@ int main(void){
             }
 
             if(timer == 0){
-                currentGameState=STATE_OPPONENT_TURN;
+                send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
+                await_ack_switch = true;
+                await_time = micros_timer();
+                attempt_counter = 0;
+                handle_ack_switch();
             }   
 
         break;
