@@ -19,18 +19,8 @@
 #include "micros_timer.h"
 #include "gamelogic.h"
 
-enum GameState {
-    STATE_START,
-    STATE_PLACE_BOATS,
-    STATE_SETUP_GAME,
-    STATE_YOUR_TURN,
-    STATE_OPPONENT_TURN,
-    STATE_GAME_OVER
-};
-
-GameState currentGameState = STATE_START;
 bool startingPlayer = false; //true if this device starts first
-
+GameState currentGameState = STATE_START;
 
 int main(void){
     init();//from arduino.h
@@ -51,18 +41,26 @@ int main(void){
     switch (currentGameState)
     {
     case STATE_START:
+        if(ir_start_command_received()){
+            started = 1;
+            startingPlayer = false;
+            grid_init();
+            currentGameState=STATE_PLACE_BOATS;
+        }
+
         if(screen_touched() && !started){
         started = 1;
         startingPlayer = true;
+        send_command(1, ADDR_START, 12);
         grid_init();
         currentGameState=STATE_PLACE_BOATS;
     }
         break;
-
+    
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
-        
         update_grid();
+        send_command(1, ADDR_START, 1);
         if(boat_placement(own_grid)){
             currentGameState=STATE_SETUP_GAME;
         }
@@ -70,35 +68,48 @@ int main(void){
 
     case STATE_SETUP_GAME:
         // Code to handle game setup
+
         initCells(opp_grid);
         timer_init(timer);
         fill_grid(opp_grid);
-        currentGameState=STATE_YOUR_TURN;
-        break;
 
+        //wait for both players
+        if (startingPlayer) {
+            currentGameState = STATE_YOUR_TURN;
+        } else {
+            currentGameState = STATE_OPPONENT_TURN;
+        }        break;
     case STATE_YOUR_TURN:
         drawYourTurn(1);
 
-        uint16_t selected_cell = joystick_select();
+        shoot_salvo(opp_grid);
+        update_opp_grid(); // State = opp turn
+        handle_ack();
+        handle_ir_frame();
+            if(one_second_passed() && started && timer > 0){
+            timer--; // decrease timer once every second
+            timer_init(timer);
+            }
 
-        handle_place_boat(selected_cell);
-        update_grid();
-        handle_ack(selected_cell);
-        handle_ir_frame(selected_cell);
+            if(timer == 0){
+                send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
+                await_ack_switch = true;
+                await_time = micros_timer();
+                attempt_counter = 0;
+                handle_ack_switch();
+            }   
 
-        
-        if(one_second_passed() && started && timer > 0){
-        timer--; // decrease timer once every second
-        timer_init(timer);
-
-        }if(timer == 0){
-            drawYourTurn(0);
-            currentGameState=STATE_OPPONENT_TURN;
-        }
         break;
 
     case STATE_OPPONENT_TURN:
+        timer = 30; // reset own timer, won't go down until it is your own turn
+
         //Code to handle opponent's turn
+        drawYourTurn(0);
+        update_grid();
+        handle_ack();
+        handle_ir_frame(); // State = your turn
+
         break;
 
     case STATE_GAME_OVER:

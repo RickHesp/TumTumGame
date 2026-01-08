@@ -35,4 +35,5 @@ void drawYourTurn(int on_off);
 void lives(int lives);
 
 void update_grid();
+void update_opp_grid();
 #endif

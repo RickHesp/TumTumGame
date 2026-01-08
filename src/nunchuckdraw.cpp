@@ -90,6 +90,18 @@ uint8_t joystick_select() {
     return index;
 }
 
+uint8_t opp_joystick_select() {
+    uint32_t current = micros_timer();
+    if(current - last_time > MOVE_DELAY){
+        joy = nunchuck_readJoystick();
+        index = move_joysticks(joy);
+        oppSelectCell(index);
+        if(old_index != index) oppDeselectCell(old_index);
+        last_time = current;
+    }
+    return index;
+}
+
 //compute tail index from head+direction (tail is "behind" the head)
 bool boat_tail_from_head(uint16_t head_index, uint8_t boat_direction) {
     int head_row = head_index / GRID_WIDTH;

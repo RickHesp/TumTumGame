@@ -62,6 +62,12 @@ void update_grid(){
     // drawRadarGrid();
 }
 
+void update_opp_grid(){
+    if(micros_timer() - lastmove > 100){
+        fill_grid(opp_grid);
+        lastmove = micros_timer();
+    }
+}
 
 void get_cell_location(uint8_t cell){
     //calculate row and column
