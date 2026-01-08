@@ -72,6 +72,8 @@ int main(void){
         initCells(opp_grid);
         timer_init(timer);
         fill_grid(opp_grid);
+
+        //wait for both players
         if (startingPlayer) {
             currentGameState = STATE_YOUR_TURN;
         } else {
@@ -90,6 +92,7 @@ int main(void){
             }
 
             if(timer == 0){
+                timer = 30;
                 currentGameState=STATE_OPPONENT_TURN;
             }   
 
