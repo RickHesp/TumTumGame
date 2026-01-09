@@ -12,6 +12,7 @@
 #define ADDR_ACK_SWITCH 23
 #define ACK_TIMEOUT 500000UL
 #define MAX_ATTEMPTS 20
+#define EXPANDER 0x21
 
 enum GameState {
     STATE_START,

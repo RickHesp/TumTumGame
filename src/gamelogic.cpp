@@ -5,7 +5,7 @@
 #include "micros_timer.h"
 #include "rc5decoder.h"
 #include "grid.h"
-#include <usart.h>
+#include "7segment.h"
 
 bool await_ack = false;
 bool await_ack_switch = false;
@@ -22,7 +22,7 @@ void handle_ack() {
         attempt_counter++;
         if (attempt_counter > MAX_ATTEMPTS){
             await_ack = false;
-            // show error: no connection
+            write_E(EXPANDER);
         }
     }
 }
@@ -34,7 +34,7 @@ void handle_ack_switch(){
         attempt_counter++;
         if(attempt_counter > MAX_ATTEMPTS){
             await_ack_switch = false;
-            // show error: no connection
+            write_E(EXPANDER);
         }
     }
 }

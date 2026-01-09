@@ -18,8 +18,6 @@
 #include "micros_timer.h"
 #include "gamelogic.h"
 
-#define SEGMENT 0x21
-
 bool startingPlayer = false; //true if this device starts first
 GameState currentGameState = STATE_START;
 
@@ -93,10 +91,10 @@ int main(void){
             timer--; // decrease timer once every second
             timer_init(timer);
             if(timer < 10){
-                countDown_step(SEGMENT, timer);
+                countDown_step(EXPANDER, timer);
             }
             else{
-                clear_display(SEGMENT);
+                clear_display(EXPANDER);
             }
         }
 

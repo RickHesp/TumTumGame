@@ -33,3 +33,8 @@ int countDown_step(uint8_t expander, int digit) {
 void clear_display(uint8_t expander) {
     expander_write(0xFF, expander);   // all segments OFF
 }
+
+void write_E(uint8_t expander) {
+    expander_write(0b10000110, expander);
+}
+

@@ -13,7 +13,7 @@ extern "C" {
 void expander_write(uint8_t data, uint8_t expander);
 int countDown_step(uint8_t expander, int digit);
 void clear_display(uint8_t expander);
-
+void write_E(uint8_t expander);
 #ifdef __cplusplus
 }
 #endif
