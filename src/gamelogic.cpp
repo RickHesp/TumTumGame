@@ -62,6 +62,7 @@ bool boat_placement(gridCell* grid){
         //if no boats are present, place boat cells
         for(uint8_t i=0; i<sizeof(index_array)/sizeof(index_array[0]); i++){
             placeBoat(index_array[i]);//place boat at selected cell
+            drawBoat(index_array[i], index_array[i+1]);//draw boat on display
         }
         placed_boats++;
     }

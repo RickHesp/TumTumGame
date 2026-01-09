@@ -73,7 +73,7 @@ void get_cell_location(uint8_t cell){
     //calculate row and column
     uint8_t index = cell;
     uint8_t row =index / GRID_WIDTH;
-    uint8_t col =index % GRID_HEIGHT;
+    uint8_t col =index % GRID_WIDTH; // fixed: use GRID_WIDTH
 
     //calculate x and y position
     x = col * cell_pixel_width;
@@ -237,62 +237,70 @@ void drawRadarGrid() {
   }
 }
 
-
-// 0 = Vertical (Points Up), 1 = Horizontal (Points Right)
-void drawBoat(uint8_t gridNumber, uint8_t orientation)
+void drawBoat(uint8_t gridNumber_head, uint8_t gridNumber_tail)
 {
-    uint8_t cell = gridNumber;
-    get_cell_location(cell);  
+    uint8_t head_col = gridNumber_head % GRID_WIDTH;
+    uint8_t head_row = gridNumber_head / GRID_WIDTH;
+    uint8_t tail_col = gridNumber_tail % GRID_WIDTH;
+    uint8_t tail_row = gridNumber_tail / GRID_WIDTH;
+
+    bool horizontal = (head_row == tail_row);
+
+    uint8_t start_grid;
+    if (horizontal) {
+        start_grid = (head_col < tail_col) ? gridNumber_head : gridNumber_tail;
+    } else {
+        start_grid = (head_row < tail_row) ? gridNumber_head : gridNumber_tail;
+    }
+
+    get_cell_location(start_grid); //location of starting cell
 
     uint16_t shipColor = ILI9341_DARKGREY;
-
-    int cx = x + cell_pixel_width / 2;
-    int cy = y + cell_pixel_height / 2;
-
-    int shipWidth, shipHeight;
-    
-    // Scale factors
-    int halfBeam = (cell_pixel_width * 0.4) / 2; 
+    int halfBeam = (cell_pixel_width * 40) / 100 / 2; // 40% of cell width / 2
     int margin = 4;
 
-    if (orientation == 0)
+    if (!horizontal)
     {
-        int totalLen = (cell_pixel_height * 2) - (margin * 2);
+        int shipX = x + (cell_pixel_width / 2) - halfBeam;
+        int shipW = halfBeam * 2;
+        int shipY = y + margin;
+        int shipH = (cell_pixel_height * 2) - (margin * 2);
 
-        tft.fillRect(cx - halfBeam, y + margin + 10, halfBeam * 2, totalLen - 15, shipColor);
+        tft.fillRect(shipX, shipY, shipW, shipH, shipColor);
 
         tft.fillTriangle(
-            cx - halfBeam, y + margin + 10, 
-            cx + halfBeam, y + margin + 10, 
-            cx,            y + margin, 
+            x + (cell_pixel_width / 2) - halfBeam, shipY,
+            x + (cell_pixel_width / 2) + halfBeam, shipY,
+            x + (cell_pixel_width / 2), y + margin - (cell_pixel_height/4),
             shipColor
         );
 
-        
-        tft.fillRect(cx - halfBeam - 2, y + (cell_pixel_height * 2) - margin - 8, (halfBeam * 2) + 4, 8, shipColor);
+        tft.fillRect(x + (cell_pixel_width / 2) - halfBeam - 2, y + (cell_pixel_height * 2) - margin - 8, shipW + 4, 8, shipColor);
 
-        tft.fillCircle(cx, y + cell_pixel_height - 10, 3, ILI9341_BLACK);
-        tft.fillCircle(cx, y + cell_pixel_height + 10, 3, ILI9341_BLACK);
+        tft.fillCircle(x + (cell_pixel_width / 2), y + cell_pixel_height - 6, 3, ILI9341_BLACK);
+        tft.fillCircle(x + (cell_pixel_width / 2), y + cell_pixel_height + 6, 3, ILI9341_BLACK);
     }
     else
     {
-        // Total length
-        int totalLen = (cell_pixel_width * 2) - (margin * 2);
+        int shipY = y + (cell_pixel_height / 2) - halfBeam;
+        int shipH = halfBeam * 2;
+        int shipX = x + margin;
+        int shipW = (cell_pixel_width * 2) - (margin * 2);
 
-        tft.fillRect(x + margin, cy - halfBeam, totalLen - 10, halfBeam * 2, shipColor);
+        tft.fillRect(shipX, shipY, shipW, shipH, shipColor);
 
         int bowX = x + (cell_pixel_width * 2) - margin;
         tft.fillTriangle(
-            bowX - 10, cy - halfBeam, // Top Left of triangle
-            bowX - 10, cy + halfBeam, // Bottom Left of triangle
-            bowX,      cy,            // Tip pointing right
+            bowX - halfBeam, y + (cell_pixel_height / 2) - halfBeam,
+            bowX - halfBeam, y + (cell_pixel_height / 2) + halfBeam,
+            bowX,            y + (cell_pixel_height / 2),
             shipColor
         );
 
-        tft.fillRect(x + margin, cy - halfBeam - 2, 8, (halfBeam * 2) + 4, shipColor);
+        tft.fillRect(x + margin - 4, y + (cell_pixel_height / 2) - halfBeam - 2, 8, shipH + 4, shipColor);
 
-        tft.fillCircle(x + cell_pixel_width - 10, cy, 3, ILI9341_BLACK);
-        tft.fillCircle(x + cell_pixel_width + 10, cy, 3, ILI9341_BLACK);
+        tft.fillCircle(x + cell_pixel_width - 6, y + (cell_pixel_height / 2), 3, ILI9341_BLACK);
+        tft.fillCircle(x + cell_pixel_width + 6, y + (cell_pixel_height / 2), 3, ILI9341_BLACK);
     }
 }
 void drawWarshipArt() {

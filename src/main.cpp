@@ -50,21 +50,26 @@ int main(void){
 
         if(screen_touched() && !started){
         started = 1;
-        startingPlayer = true;
-        send_command(1, 2, 12);
         grid_init();
         currentGameState=STATE_PLACE_BOATS;
     }
         break;
     
-    case STATE_PLACE_BOATS:
-        // Code to handle boat placement
-        update_grid();
-        send_command(1, 2, 1);
-        if(boat_placement(own_grid)){
-            currentGameState=STATE_SETUP_GAME;
+case STATE_PLACE_BOATS:
+    // Use nunchuck to select a head+tail and simulate drawing the boat when Z is pressed
+    update_grid();
+    {
+        uint8_t *inds = joystick_select_boat(nunchuck_c_button()); // returns [head, tail]
+        if (screen_touched()){
+            // place both cells and draw the ship spanning the two selected cells
+            placeBoat(inds[0]);
+            placeBoat(inds[1]);
+            drawBoat(inds[0], inds[1]);
+            // advance to setup (adjust as needed for multiple boats)
+            currentGameState = STATE_SETUP_GAME;
         }
-        break;
+    }
+     break;
 
     case STATE_SETUP_GAME:
         // Code to handle game setup
