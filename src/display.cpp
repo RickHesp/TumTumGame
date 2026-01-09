@@ -373,10 +373,5 @@ void dropBomb(uint8_t gridNumber) {
 
     micros_ms_timer_delay(50000);
     color_cell(gridNumber, ILI9341_NAVY); // Reset cell background
-    // color_cell(gridNumber + 6, ILI9341_NAVY); 
-    // color_cell(gridNumber - 6, ILI9341_NAVY);
-    // color_cell(gridNumber + 1, ILI9341_NAVY);
-    // color_cell(gridNumber - 1, ILI9341_NAVY);
-    drawRadarGrid(); 
 }
 

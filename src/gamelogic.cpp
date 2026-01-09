@@ -56,9 +56,7 @@ void handle_ir_frame() {
             await_ack = false;
             currentGameState=STATE_OPPONENT_TURN;
             boatsFound++;
-            USART_Print("Found: ");
-            USART_Print_U8(boatsFound);
-            USART_putc('\n');
+            
         }
 
     }
@@ -66,14 +64,15 @@ void handle_ir_frame() {
         if(own_grid[frame.command].boat){
             send_command(1, ADDR_ACK_HIT, frame.command);
             if(own_grid[frame.command].hit == 0){
+                dropBomb(frame.command);
                 boatsLeft--;
-                USART_Print("Left: ");
-                USART_Print_U8(boatsLeft);
-                USART_putc('\n');
             }
         }
         else{
             send_command(1, ADDR_ACK, frame.command);
+            if(own_grid[frame.command].hit == 0){
+                dropBomb(frame.command);
+            }
         }
         hitCell(frame.command);
         currentGameState=STATE_YOUR_TURN;
@@ -82,8 +81,7 @@ void handle_ir_frame() {
         currentGameState=STATE_YOUR_TURN;
     } else if (frame.address == ADDR_ACK_SWITCH){
         currentGameState=STATE_OPPONENT_TURN;
-    }
-    
+    }   
 }
 
 bool ir_start_command_received(){
@@ -122,6 +120,7 @@ void shoot_salvo(gridCell *grid){
 
     if (nunchuck_z_button() && !await_ack) {
         send_command(1, ADDR_SHOOT, selected_cell);
+        dropBomb(selected_cell);
         await_ack = true;
         await_time = micros_timer();
         attempt_counter = 0;

@@ -24,7 +24,7 @@ void drawSeaBackground();
 void drawRadarGrid();
 void drawBoat(uint8_t gridNumber);
 void drawWarshipArt();
-
+void dropBomb(uint8_t gridNumber);
 
 //endscreen
 void endscreen_init(bool won);
