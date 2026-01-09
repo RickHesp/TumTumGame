@@ -50,26 +50,21 @@ int main(void){
 
         if(screen_touched() && !started){
         started = 1;
+        startingPlayer = true;
+        send_command(1, ADDR_START, 12);
         grid_init();
         currentGameState=STATE_PLACE_BOATS;
     }
         break;
     
-case STATE_PLACE_BOATS:
-    // Use nunchuck to select a head+tail and simulate drawing the boat when Z is pressed
-    update_grid();
-    {
-        uint8_t *inds = joystick_select_boat(nunchuck_c_button()); // returns [head, tail]
-        if (screen_touched()){
-            // place both cells and draw the ship spanning the two selected cells
-            placeBoat(inds[0]);
-            placeBoat(inds[1]);
-            drawBoat(inds[0], inds[1]);
-            // advance to setup (adjust as needed for multiple boats)
-            currentGameState = STATE_SETUP_GAME;
+    case STATE_PLACE_BOATS:
+        // Code to handle boat placement
+        update_grid();
+        send_command(1, ADDR_START, 1);
+        if(boat_placement(own_grid)){
+            currentGameState=STATE_SETUP_GAME;
         }
-    }
-     break;
+        break;
 
     case STATE_SETUP_GAME:
         // Code to handle game setup
@@ -77,6 +72,8 @@ case STATE_PLACE_BOATS:
         initCells(opp_grid);
         timer_init(timer);
         fill_grid(opp_grid);
+
+        //wait for both players
         if (startingPlayer) {
             currentGameState = STATE_YOUR_TURN;
         } else {
@@ -95,12 +92,18 @@ case STATE_PLACE_BOATS:
             }
 
             if(timer == 0){
-                currentGameState=STATE_OPPONENT_TURN;
+                send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
+                await_ack_switch = true;
+                await_time = micros_timer();
+                attempt_counter = 0;
+                handle_ack_switch();
             }   
 
         break;
 
     case STATE_OPPONENT_TURN:
+        timer = 30; // reset own timer, won't go down until it is your own turn
+
         //Code to handle opponent's turn
         drawYourTurn(0);
         update_grid();
