@@ -2,7 +2,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
-#include <usart.h>
 #include <Arduino.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
@@ -32,7 +31,6 @@ int main(void){
     nunchuck_init();
     initCells(own_grid);
     Startscreen_init();
-    USART_Init();    
 
     sei();
     uint8_t started = 0;
