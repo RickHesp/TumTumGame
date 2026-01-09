@@ -2,7 +2,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
-#include <usart.h>
 #include <Arduino.h>
 #include "sendcommand.h"
 #include "irreceiver.h"
@@ -30,7 +29,6 @@ int main(void){
     nunchuck_init();
     initCells(own_grid);
     Startscreen_init();
-    USART_Init();    
 
     sei();
     uint8_t started = 0;
@@ -59,6 +57,9 @@ int main(void){
     
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
+        if(ir_start_command_received()){
+            timer = 30;
+        }
         update_grid();
         send_command(1, ADDR_START, 1);
         if(boat_placement(own_grid)){
@@ -86,19 +87,27 @@ int main(void){
         update_opp_grid(); // State = opp turn
         handle_ack();
         handle_ir_frame();
-            if(one_second_passed() && started && timer > 0){
+        if(one_second_passed() && started && timer > 0){
             timer--; // decrease timer once every second
             timer_init(timer);
+            if(timer < 10){
+                countDown_step(EXPANDER, timer);
             }
+            else{
+                clear_display(EXPANDER);
+            }
+        }
 
-            if(timer == 0){
-                send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
-                await_ack_switch = true;
-                await_time = micros_timer();
-                attempt_counter = 0;
-                handle_ack_switch();
-            }   
+        if(timer == 0){
+            send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
+            await_ack_switch = true;
+            await_time = micros_timer();
+            attempt_counter = 0;
+            handle_ack_switch();
+        }   
 
+        if(boatsFound == 8 || boatsLeft == 0) currentGameState=STATE_GAME_OVER;
+        
         break;
 
     case STATE_OPPONENT_TURN:
@@ -110,10 +119,16 @@ int main(void){
         handle_ack();
         handle_ir_frame(); // State = your turn
 
+        if(boatsFound == 8 || boatsLeft == 0) currentGameState=STATE_GAME_OVER;
+
         break;
 
     case STATE_GAME_OVER:
-        //Code to handle game over
+        handle_ir_frame();
+
+        bool winner = 0;
+        if(boatsFound == 8) winner = 1;
+        endscreen_init(winner);
         break;
     default:
         break;

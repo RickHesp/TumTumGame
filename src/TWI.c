@@ -1,3 +1,6 @@
+#ifndef TWI_H
+#define TWI_H
+
 #include <avr/io.h>
 #include <util/delay.h>
 
@@ -32,3 +35,5 @@ uint8_t TWI_read_NACK(){//read NACK-bit
     while (!(TWCR & (1<<TWINT)));
     return TWDR;
 }
+
+#endif

@@ -19,6 +19,14 @@ uint8_t one_second_passed(){
   }else{return 0;}
 }
 
+uint8_t micros_ms_timer_delay(uint32_t delay_time){
+  //delay in microseconds
+  uint32_t start = micros_timer();
+  while((micros_timer() - start) < delay_time){
+    //wait
+  }
+}
+
 ISR(TIMER1_OVF_vect){
   t1_overflows++;
 }

@@ -8,9 +8,11 @@
 #define ADDR_START 2
 #define ADDR_SWITCH_PLAYER 3
 #define ADDR_ACK 21
-#define ADDR_ACK_SWITCH 22
+#define ADDR_ACK_HIT 22
+#define ADDR_ACK_SWITCH 23
 #define ACK_TIMEOUT 500000UL
 #define MAX_ATTEMPTS 20
+#define EXPANDER 0x21
 
 enum GameState {
     STATE_START,
@@ -26,6 +28,8 @@ extern bool await_ack_switch;
 extern uint32_t await_time;
 extern uint8_t attempt_counter;
 extern GameState currentGameState;
+extern uint8_t boatsFound;
+extern uint8_t boatsLeft;
 
 void handle_ack();
 void handle_ack_switch();
