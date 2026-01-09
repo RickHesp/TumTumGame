@@ -172,7 +172,7 @@ uint8_t* joystick_select_boat(uint8_t boat_direction) {
 
 //function for getting playerinput for the boat direction
 uint8_t nunchuck_c_button(){
-    static uint8_t direction = 0;
+    static uint8_t direction = 2;
     if (direction > 3) direction = 0;
 
     if(joy.cButton){
