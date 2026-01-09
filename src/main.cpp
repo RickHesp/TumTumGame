@@ -26,7 +26,7 @@ GameState currentGameState = STATE_START;
 
 int main(void){
     init();//from arduino.h
-    // brightness_init();
+    brightness_init();
     init_ir_sender();
     init_ir_receiver();
     nunchuck_init();
@@ -128,6 +128,8 @@ int main(void){
         break;
 
     case STATE_GAME_OVER:
+        handle_ir_frame();
+
         bool winner = 0;
         if(boatsFound == 8) winner = 1;
         endscreen_init(winner);
