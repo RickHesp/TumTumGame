@@ -188,7 +188,6 @@ void timer_init(int timer){
     tft.setCursor(265, 10);
     tft.setTextSize(3);
     tft.print(timer);
-
 }
 
 void drawYourTurn(int on_off){
@@ -199,42 +198,12 @@ void drawYourTurn(int on_off){
         tft.print("*");
         return;
     }else{
+        tft.setCursor(265, 50);
+        tft.setTextSize(5);
+        tft.setTextColor(ILI9341_NAVY, ILI9341_NAVY);
+        tft.print("*");
         return;
     }
-
-}
-
-void drawRadarGrid() {
-  uint16_t gridColor = ILI9341_GREEN;
-  uint16_t faintGrid = tft.color565(0, 80, 0);
-
-  tft.drawRect(0, 0, 240, 240, gridColor);
-
-  for (int i = 1; i < 6; i++) {
-    int p = i * 40;
-
-    tft.drawFastVLine(p, 0, 240, faintGrid);
-    tft.drawFastHLine(0, p, 240, faintGrid);
-  }
-
-  // Center crosshair (thicker)
-  tft.drawFastVLine(120, 0, 240, gridColor);
-  tft.drawFastVLine(121, 0, 240, gridColor);
-  tft.drawFastHLine(0, 120, 240, gridColor);
-  tft.drawFastHLine(0, 121, 240, gridColor);
-
-  // Radar circles
-  for (int r = 40; r <= 120; r += 40) {
-    tft.drawCircle(120, 120, r, faintGrid);
-  }
-
-  // Corner ticks
-  for (int i = 0; i < 240; i += 8) {
-    tft.drawPixel(i, 0, gridColor);
-    tft.drawPixel(0, i, gridColor);
-    tft.drawPixel(i, 239, gridColor);
-    tft.drawPixel(239, i, gridColor);
-  }
 }
 
 void drawBoat(uint8_t gridNumber)
