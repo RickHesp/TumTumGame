@@ -19,7 +19,7 @@
 #include "micros_timer.h"
 #include "gamelogic.h"
 
-#define EXPANDER 0x52
+#define SEGMENT 0x21
 
 bool startingPlayer = false; //true if this device starts first
 GameState currentGameState = STATE_START;
@@ -37,6 +37,7 @@ int main(void){
     sei();
     uint8_t started = 0;
     uint8_t timer = 30;
+    uint8_t boatsFound = 0;
 
     while(1){
 
@@ -95,10 +96,10 @@ int main(void){
             timer--; // decrease timer once every second
             timer_init(timer);
             if(timer < 10){
-                countDown_step(EXPANDER, timer);
+                countDown_step(SEGMENT, timer);
             }
             else{
-                clear_display(EXPANDER);
+                clear_display(SEGMENT);
             }
             }
 
