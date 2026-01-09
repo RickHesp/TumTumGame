@@ -37,7 +37,6 @@ int main(void){
     sei();
     uint8_t started = 0;
     uint8_t timer = 30;
-    uint8_t boatsFound = 0;
 
     while(1){
 
@@ -92,7 +91,7 @@ int main(void){
         update_opp_grid(); // State = opp turn
         handle_ack();
         handle_ir_frame();
-            if(one_second_passed() && started && timer > 0){
+        if(one_second_passed() && started && timer > 0){
             timer--; // decrease timer once every second
             timer_init(timer);
             if(timer < 10){
@@ -101,16 +100,18 @@ int main(void){
             else{
                 clear_display(SEGMENT);
             }
-            }
+        }
 
-            if(timer == 0){
-                send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
-                await_ack_switch = true;
-                await_time = micros_timer();
-                attempt_counter = 0;
-                handle_ack_switch();
-            }   
+        if(timer == 0){
+            send_command(1, ADDR_SWITCH_PLAYER, 1); // for opponent: STATE_YOUR_TURN
+            await_ack_switch = true;
+            await_time = micros_timer();
+            attempt_counter = 0;
+            handle_ack_switch();
+        }   
 
+        if(boatsFound == 8 || boatsLeft == 0) currentGameState=STATE_GAME_OVER;
+        
         break;
 
     case STATE_OPPONENT_TURN:
@@ -122,10 +123,14 @@ int main(void){
         handle_ack();
         handle_ir_frame(); // State = your turn
 
+        if(boatsFound == 8 || boatsLeft == 0) currentGameState=STATE_GAME_OVER;
+
         break;
 
     case STATE_GAME_OVER:
-        //Code to handle game over
+        bool winner = 0;
+        if(boatsFound == 8) winner = 1;
+        endscreen_init(winner);
         break;
     default:
         break;
