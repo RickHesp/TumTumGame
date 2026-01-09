@@ -19,6 +19,8 @@
 #include "micros_timer.h"
 #include "gamelogic.h"
 
+#define EXPANDER 0x52
+
 bool startingPlayer = false; //true if this device starts first
 GameState currentGameState = STATE_START;
 
@@ -59,6 +61,9 @@ int main(void){
     
     case STATE_PLACE_BOATS:
         // Code to handle boat placement
+        if(ir_start_command_received()){
+            timer = 30;
+        }
         update_grid();
         send_command(1, ADDR_START, 1);
         if(boat_placement(own_grid)){
@@ -89,6 +94,12 @@ int main(void){
             if(one_second_passed() && started && timer > 0){
             timer--; // decrease timer once every second
             timer_init(timer);
+            if(timer < 10){
+                countDown_step(EXPANDER, timer);
+            }
+            else{
+                clear_display(EXPANDER);
+            }
             }
 
             if(timer == 0){
